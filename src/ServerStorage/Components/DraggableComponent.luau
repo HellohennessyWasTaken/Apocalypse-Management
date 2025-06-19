@@ -1,6 +1,6 @@
--- SERVER --
-
 --!strict
+
+-- SERVER --
 
 --< TYPES >--
 

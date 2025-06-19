@@ -1,3 +1,5 @@
+--!strict
+
 --< INFO >--
 --[[
 	Handles gameplay like waves and so forth

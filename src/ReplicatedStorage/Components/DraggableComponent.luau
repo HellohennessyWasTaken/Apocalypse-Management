@@ -1,6 +1,6 @@
--- CLIENT --
-
 --!strict
+
+-- CLIENT --
 
 --< TYPES >--
 

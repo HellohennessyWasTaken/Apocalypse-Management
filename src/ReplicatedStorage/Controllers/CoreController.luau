@@ -1,7 +1,8 @@
+--!strict
+
 --< INFO >--
 
 --< TYPES >--
---!strict
 
 --< SERVICES >--
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
