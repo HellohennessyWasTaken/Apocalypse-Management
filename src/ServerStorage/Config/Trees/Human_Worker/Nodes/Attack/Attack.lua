@@ -1,0 +1,29 @@
+local node = {}		
+
+local SUCCESS,FAIL,RUNNING = 1,2,3
+
+function node.start(self) end
+
+function node.finish(self, status) end	
+
+function node.run(self)
+	if not self.Threat or not self.Threat.PrimaryPart then return FAIL end
+
+	local humanoid = self.Threat:FindFirstChild("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then return FAIL end
+	
+	if (self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Magnitude > self.GetAttackRange() then
+		return FAIL
+	end
+	if os.clock() - self.LastTimeAttack < self.GetAttackCooldown() then
+		return FAIL
+	end
+	self.LastTimeAttack = os.clock()
+
+	humanoid:TakeDamage(self.GetDamage())
+	self.Threat.PrimaryPart:ApplyImpulse((self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Unit *  -self.GetKnockback())
+
+	return SUCCESS
+end
+
+return node
