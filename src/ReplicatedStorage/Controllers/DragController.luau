@@ -27,8 +27,8 @@ local CurrentCamera = workspace.CurrentCamera
 
 local DragController = {
 	Name = script.Name,
-	HoldTarget = script.HoldTarget:Clone(),
-	AlignPosition = script.AlignPosition:Clone(),
+	HoldTarget = ReplicatedStorage.Logic.HoldTarget:Clone(),
+	AlignPosition = ReplicatedStorage.Logic.AlignPosition:Clone(),
 	DragSignal = Signal.new()
 }
 
