@@ -73,18 +73,18 @@ function ZombieComponent:Construct()
 
 	self.GetDamage = function ()
 		local addedStat = 0
-		for i, v in self.Inventory do
-			if v then
+		for _, v in self.Inventory do
+			if v.Damage then
 				addedStat = v.Damage
 			end
 		end
-
+		
 		return self.BaseDamage + addedStat
 	end
 	self.GetAttackRange = function ()
 		local addedStat = 0
-		for i, v in self.Inventory do
-			if v then
+		for _, v in self.Inventory do
+			if v.AttackRange then
 				addedStat = v.AttackRange
 			end
 		end
@@ -93,8 +93,8 @@ function ZombieComponent:Construct()
 	end
 	self.GetAttackCooldown = function ()
 		local addedStat = 0
-		for i, v in self.Inventory do
-			if v then
+		for _, v in self.Inventory do
+			if v.AttackCooldown then
 				addedStat = v.AttackCooldown
 			end
 		end
@@ -103,8 +103,8 @@ function ZombieComponent:Construct()
 	end
 	self.GetSpeed = function ()
 		local addedStat = 0
-		for i, v in self.Inventory do
-			if v then
+		for _, v in self.Inventory do
+			if v.Speed then
 				addedStat = v.Speed
 			end
 		end
@@ -113,8 +113,8 @@ function ZombieComponent:Construct()
 	end
 	self.GetKnockback = function ()
 		local addedStat = 0
-		for i, v in self.Inventory do
-			if v then
+		for _, v in self.Inventory do
+			if v.Knockback then
 				addedStat = v.Knockback
 			end
 		end
