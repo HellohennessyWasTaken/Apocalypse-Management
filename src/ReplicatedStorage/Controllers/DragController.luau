@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 --< FOLDERS >--
 local Assets = ReplicatedStorage.Assets
@@ -23,7 +24,7 @@ local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):Wai
 local Mouse = Player:GetMouse()
 local PlayerGui = Player.PlayerGui
 
-local CurrentCamera = workspace.CurrentCamera
+local CurrentCamera = Workspace.CurrentCamera
 
 local DragController = {
 	Name = script.Name,
@@ -38,20 +39,24 @@ local DragController = {
 }
 
 function DragController:KnitInit()
-	DragController.HoldTarget.Parent = workspace.Logic
-	DragController.AlignPosition.Parent = workspace.Logic
+	DragController.HoldTarget.Parent = Workspace.Logic
+	DragController.AlignPosition.Parent = Workspace.Logic
 	DragController.AlignPosition.Attachment1 = DragController.HoldTarget.Attachment
 end
 
 function DragController:KnitStart()	
+	local DragService = Knit.GetService("DragService")
+
 	UserInputService.InputChanged:Connect(function(input, gameProcessedEvent)
-		if input.UserInputType == Enum.UserInputType.MouseMovement then
+		if gameProcessedEvent then return end
+
+		if (input.UserInputType == Enum.UserInputType.MouseMovement) then
 			local subjectPosition = BaseCamera:GetSubjectPosition() :: Vector3?
-			if subjectPosition == nil then return end
+			if (subjectPosition == nil) then return end
 
 			local mouseLocation = UserInputService:GetMouseLocation()
 
-			local viewportPointRay = workspace.CurrentCamera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
+			local viewportPointRay = Workspace.CurrentCamera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
 			local rayOrigin = viewportPointRay.Origin
 			local mousePosition = CFrame.new(rayOrigin, rayOrigin + viewportPointRay.Direction):ToWorldSpace(CFrame.new(0, 0, -1000)).Position
 
@@ -63,9 +68,6 @@ function DragController:KnitStart()
 	
 	DragController.DragSignal:Connect(function(action: string, obj: Instance, attachment0: Attachment)
 		if (action == DragController.Statuses.Start) then
-			local DragService = Knit.GetService("DragService")
-			if not DragService then return end
-
 			DragController.AlignPosition.Enabled = true
 			DragController.AlignPosition.Attachment0 = attachment0
 
@@ -73,9 +75,6 @@ function DragController:KnitStart()
 		elseif (action == DragController.Statuses.Continue) then
 			return
 		elseif (action == DragController.Statuses.End) then
-			local DragService = Knit.GetService("DragService")
-			if not DragService then return end
-			
 			DragController.AlignPosition.Enabled = false
 			DragController.AlignPosition.Attachment0 = nil
 			
