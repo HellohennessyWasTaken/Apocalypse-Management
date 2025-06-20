@@ -79,25 +79,25 @@ function ZombieService:KnitStart()
 			local potentialTargets = GetPotentialTargets()
 			local prevDist = math.huge
 
-			for index, potentialTarget: Model in potentialTargets do
+			for _, potentialTarget: Model in potentialTargets do
 				local humanoid = potentialTarget:FindFirstChild("Humanoid") :: Humanoid
 				if not humanoid or humanoid.Health <= 0 then continue end
 
 				local potentialTargetRoot = potentialTarget.PrimaryPart
 				if not potentialTargetRoot then continue end
 
-				local PotentialTargetPosition = potentialTargetRoot.Position
+				local potentialTargetPosition = potentialTargetRoot.Position
 
 				local myPosition = zombie.HumanoidRootPart.Position
 				local myCFrame = zombie.HumanoidRootPart.CFrame
 
-				local direction = (PotentialTargetPosition - myPosition).Unit
+				local direction = (potentialTargetPosition - myPosition).Unit
 				local lookVector = myCFrame.LookVector
 
 				local dotProduct = direction:Dot(lookVector)
 				local angle = math.deg(math.acos(dotProduct))
 
-				local distance = (myPosition - PotentialTargetPosition).Magnitude
+				local distance = (myPosition - potentialTargetPosition).Magnitude
 
 				if zombie.Alert then
 					if angle > zombie.AlertFieldOfView then continue end
@@ -105,6 +105,10 @@ function ZombieService:KnitStart()
 				else
 					if angle > zombie.FieldOfView then continue end
 					if distance > zombie.ViewRange then continue end
+				end
+
+				if raycast(zombie.Character, myPosition, potentialTargetPosition) then
+					continue
 				end
 				
 				if prevDist > distance then
