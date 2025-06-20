@@ -36,9 +36,9 @@ function ResourceController:KnitInit()
 	ResourceMenuFrame = Core:WaitForChild("Resource")
 	
 	UIBlur.Enabled = false
-	for	i,v in Core:GetChildren() do
-		if not v:IsA("GuiObject") then continue end	
-		v.Visible = false
+	for	_, frame in Core:GetChildren() do
+		if not frame:IsA("GuiObject") then continue end	
+		frame.Visible = false
 	end
 end
 
