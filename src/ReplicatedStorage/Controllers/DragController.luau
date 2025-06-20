@@ -27,6 +27,11 @@ local CurrentCamera = workspace.CurrentCamera
 
 local DragController = {
 	Name = script.Name,
+	Statuses = {
+		Start = "Start",
+		Continue = "Continue",
+		End = "End"
+	},
 	HoldTarget = ReplicatedStorage.Logic.HoldTarget:Clone(),
 	AlignPosition = ReplicatedStorage.Logic.AlignPosition:Clone(),
 	DragSignal = Signal.new()
@@ -57,24 +62,24 @@ function DragController:KnitStart()
 	end)
 	
 	DragController.DragSignal:Connect(function(action: string, obj: Instance, attachment0: Attachment)
-		if action == "Start" then
+		if (action == DragController.Statuses.Start) then
 			local DragService = Knit.GetService("DragService")
 			if not DragService then return end
 
 			DragController.AlignPosition.Enabled = true
 			DragController.AlignPosition.Attachment0 = attachment0
 
-			DragService.RequestDragRemoteSignal:Fire(obj, "Start")
-		elseif action == "Continue" then
+			DragService.RequestDragRemoteSignal:Fire(obj, DragController.Statuses.Start)
+		elseif (action == DragController.Statuses.Continue) then
 			return
-		elseif action == "End" then
+		elseif (action == DragController.Statuses.End) then
 			local DragService = Knit.GetService("DragService")
 			if not DragService then return end
 			
 			DragController.AlignPosition.Enabled = false
 			DragController.AlignPosition.Attachment0 = nil
 			
-			DragService.RequestDragRemoteSignal:Fire(obj, "End")
+			DragService.RequestDragRemoteSignal:Fire(obj, DragController.Statuses.End)
 		else
 			return
 		end
