@@ -40,14 +40,12 @@ end
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
 local function raycast(caster: Model, start: Vector3, finish: Vector3)
-	parameters.FilterDescendantsInstances = {caster}
-	do
-		local temp
-		temp = GetPotentialTargets()
-		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
-		temp = getZombies()
-		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
-	end
+	local descendantsInstancesToFilter = {caster} :: {Instance}
+	local temp = GetPotentialTargets()
+	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	temp = getZombies()
+	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	parameters.FilterDescendantsInstances = descendantsInstancesToFilter
 
 	local raycast = workspace:Raycast(start, (finish - start), parameters)
 
