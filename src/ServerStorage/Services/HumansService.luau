@@ -190,7 +190,7 @@ function HumansService:KnitStart()
 	end)
 	
 	task.spawn(function()
-		while true do
+		while task.wait(0.5) do
 			for _, human in HumanComponent:GetAll() do
 				if not human.Character then continue end
 				if not human.Character:IsDescendantOf(Workspace) then continue end
@@ -201,7 +201,6 @@ function HumansService:KnitStart()
 				human.NearbyItems = GetItemsNearby(human)
 				human.NearbyResources = GetResourcesNearby(human)
 			end
-			task.wait(0.5)
 		end
 	end)
 end
