@@ -11,19 +11,15 @@ local CollectionService = game:GetService("CollectionService")
 
 --< FOLDERS >--
 local Assets = ReplicatedStorage.Assets
-local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
-local Knit = require(ReplicatedStorage.Packages.Knit)
-local Component = require(ReplicatedStorage.Packages.Component)
-
 local ZombieComponent = require(ServerStorage.Components.ZombieComponent)
 
 --< MAIN >--
 local ZombieAssetFolder = Assets.Zombies
 local ZombieAsset = ZombieAssetFolder.Zombie
 
-local function GetPotentialTargets()
+local function GetPotentialTargets() : {Model}
 	local targets = {}
 	for _, target in CollectionService:GetTagged("Human") do
 		if not target:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -32,7 +28,7 @@ local function GetPotentialTargets()
 	return targets
 end
 
-local function getZombies()
+local function getZombies() : {Model}
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
 		if not threat:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -44,7 +40,14 @@ end
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
 local function raycast(caster: Model, start: Vector3, finish: Vector3)
-	parameters.FilterDescendantsInstances = {caster, GetPotentialTargets(), getZombies()}
+	parameters.FilterDescendantsInstances = {caster}
+	do
+		local temp
+		temp = GetPotentialTargets()
+		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
+		temp = getZombies()
+		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
+	end
 
 	local raycast = workspace:Raycast(start, (finish - start), parameters)
 
