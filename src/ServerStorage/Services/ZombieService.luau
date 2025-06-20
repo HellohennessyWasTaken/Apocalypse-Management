@@ -8,6 +8,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local CollectionService = game:GetService("CollectionService")
+local Workspace = game:GetService("Workspace")
 
 --< FOLDERS >--
 local Assets = ReplicatedStorage.Assets
@@ -22,7 +23,7 @@ local ZombieAsset = ZombieAssetFolder.Zombie
 local function GetPotentialTargets() : {Model}
 	local targets = {}
 	for _, target in CollectionService:GetTagged("Human") do
-		if not target:IsDescendantOf("Workspace") then continue end
+		if not target:IsDescendantOf(Workspace) then continue end
 		table.insert(targets, target)
 	end
 	return targets
@@ -31,7 +32,7 @@ end
 local function getZombies() : {Model}
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
-		if not threat:IsDescendantOf("Workspace") then continue end
+		if not threat:IsDescendantOf(Workspace) then continue end
 		table.insert(threats, threat)
 	end
 	return threats
@@ -48,7 +49,7 @@ local function raycast(caster: Model, start: Vector3, finish: Vector3)
 	-- parameters.FilterDescendantsInstances = descendantsInstancesToFilter
 	parameters.FilterDescendantsInstances = {caster, GetPotentialTargets(), getZombies()()}
 
-	local raycast = workspace:Raycast(start, (finish - start), parameters)
+	local raycast = Workspace:Raycast(start, (finish - start), parameters)
 
 	if raycast then
 		return true
@@ -66,7 +67,7 @@ local ZombieService = {
 function ZombieService:SpawnZombie(cFrame: CFrame)
 	local clone = ZombieAsset:Clone()
 	clone:PivotTo(cFrame)
-	clone.Parent = workspace
+	clone.Parent = Workspace
 end
 
 function ZombieService:KnitInit() end
