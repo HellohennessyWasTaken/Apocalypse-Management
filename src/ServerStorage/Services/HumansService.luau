@@ -41,13 +41,6 @@ end
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
 local function raycast(caster: Model, start: Vector3, finish: Vector3) : boolean
-	-- local descendantsInstancesToFilter = {caster} :: {Instance}
-	-- local temp = GetPotentialThreats()
-	-- table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
-	-- temp = getHumans()
-	-- table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
-	-- print(parameters.FilterDescendantsInstances)
-	-- parameters.FilterDescendantsInstances = descendantsInstancesToFilter
 	parameters.FilterDescendantsInstances = {caster, GetPotentialThreats(), getHumans()}
 
 	local raycast = Workspace:Raycast(start, (finish - start), parameters)
@@ -135,7 +128,7 @@ end
 
 function HumansService:KnitStart()
 	task.spawn(function()
-		while true do
+		while task.wait(0.5) do
 			for _, human in HumanComponent:GetAll() do
 				if not human.Character then continue end
 				if not human.Character:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -186,16 +179,13 @@ function HumansService:KnitStart()
 					end
 				end
 
-				if human.Threat and human.Threat.Humanoid.Health > 0 then
-					if os.clock() - human.LastTimeSawThreat < human.MemoryTime then
-						continue		
-					end
+				if human.Threat and (human.Threat.Humanoid.Health > 0) and (os.clock() - human.LastTimeSawThreat < human.MemoryTime) then
+					continue
 				end
 
 				human.IsAlert = false
 				human.Threat = nil
 			end
-			task.wait(0.5)
 		end
 	end)
 	
@@ -203,8 +193,8 @@ function HumansService:KnitStart()
 		while true do
 			for _, human in HumanComponent:GetAll() do
 				if not human.Character then continue end
-				if not human.Character:FindFirstAncestorWhichIsA("Workspace") then continue end
-				if not human.Humanoid or human.Humanoid.Health <= 0 then continue end
+				if not human.Character:IsDescendantOf(Workspace) then continue end
+				if not human.Humanoid or (human.Humanoid.Health <= 0) then continue end
 
 				human.NearbyThreats = GetPotentialThreatsNearby(human)
 				human.NearbyAllies = GetAlliesNearby(human)
