@@ -8,6 +8,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 local PhysicsService = game:GetService("PhysicsService")
+local Players = game:GetService("Players")
 
 --< FOLDERS >--
 local Assets = ReplicatedStorage.Assets
@@ -17,7 +18,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local TestService = {
+local CollisionService = {
 	Name = script.Name,
 	Client = {},
 }
@@ -25,16 +26,23 @@ local TestService = {
 local function setCollisionGroup(instance: Instance, collisionGroup: string)
 	if instance:IsA("Model") then
 		for _, descendant in instance:GetDescendants() do
-			if descendant:IsA("BasePart") then
-				descendant.CollisionGroup = collisionGroup
-			end
+			if not descendant:IsA("BasePart") then continue end
+			descendant.CollisionGroup = collisionGroup
 		end
 	elseif instance:IsA("BasePart") then
 		instance.CollisionGroup = collisionGroup
 	end
 end
 
-function TestService:KnitInit()
+local function onCharacterAdded(character: Model)
+	setCollisionGroup(character, "Player")
+	
+	character.DescendantAdded:Connect(function()
+		setCollisionGroup(character, "Player")
+	end)
+end
+
+function CollisionService:KnitInit()
 	PhysicsService:RegisterCollisionGroup("Player")
 	PhysicsService:RegisterCollisionGroup("Entity")
 	PhysicsService:RegisterCollisionGroup("Ragdoll")
@@ -43,29 +51,17 @@ function TestService:KnitInit()
 	PhysicsService:CollisionGroupSetCollidable("Player", "Ragdoll", false)
 end
 
-function TestService:KnitStart()
-	for _, player in game:GetService("Players"):GetPlayers() do
+function CollisionService:KnitStart()
+	for _, player in Players:GetPlayers() do
 		if player.Character then
 			setCollisionGroup(player.Character, "Player")
 		end
 		
-		player.CharacterAdded:Connect(function(character)
-			setCollisionGroup(character, "Player")
-			
-			character.DescendantAdded:Connect(function()
-				setCollisionGroup(character, "Player")
-			end)
-		end)
+		onCharacterAdded(player.Character)
 	end
 	
-	game:GetService("Players").PlayerAdded:Connect(function(player)
-		player.CharacterAdded:Connect(function(character)
-			setCollisionGroup(character, "Player")
-			
-			character.DescendantAdded:Connect(function()
-				setCollisionGroup(character, "Player")
-			end)
-		end)
+	Players.PlayerAdded:Connect(function(player)
+		player.CharacterAdded:Connect(onCharacterAdded)
 	end)
 
 	for _, entity in CollectionService:GetTagged("Entity") do
@@ -85,4 +81,4 @@ function TestService:KnitStart()
 	end)
 end
 
-return TestService
+return CollisionService
