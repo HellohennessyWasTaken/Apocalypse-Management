@@ -1,7 +1,6 @@
 -- @ScriptType: ModuleScript
 --!strict
 
-
 -- Requires
 local Task = require(script.Parent.Task)
 
