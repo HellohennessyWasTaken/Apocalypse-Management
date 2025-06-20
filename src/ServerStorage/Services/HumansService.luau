@@ -5,23 +5,16 @@
 --< TYPES >--
 
 --< SERVICES >--
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 --< FOLDERS >--
-local Assets = ReplicatedStorage.Assets
-local Packages = ReplicatedStorage.Packages
+
 
 --< DEPENDENCIES >--
-local Knit = require(ReplicatedStorage.Packages.Knit)
-local Component = require(ReplicatedStorage.Packages.Component)
 
 local HumanComponent = require(ServerStorage.Components.HumanComponent)
---local HumanComponent = Component.new({
---	Tag = "Human";
---})
 
 --< MAIN >--
 @native
@@ -29,7 +22,7 @@ local function checkMagnitudeBelowThreshold(a: Vector3, b: Vector3, threshold: n
 	return (a - b).Magnitude < threshold
 end
 
-local function GetPotentialThreats()
+local function GetPotentialThreats() : {Model}
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
 		if not threat:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -38,7 +31,7 @@ local function GetPotentialThreats()
 	return threats
 end
 
-local function getHumans()
+local function getHumans() : {Model}
 	local targets = {}
 	for _, target in CollectionService:GetTagged("Human") do
 		if not target:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -49,9 +42,15 @@ end
 
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
-
-local function raycast(caster: Model, start: Vector3, finish: Vector3)
-	parameters.FilterDescendantsInstances = {caster, GetPotentialThreats(), getHumans()}
+local function raycast(caster: Model, start: Vector3, finish: Vector3) : boolean
+	parameters.FilterDescendantsInstances = {caster}
+	do
+		local temp
+		temp = GetPotentialThreats()
+		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
+		temp = getHumans()
+		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
+	end
 
 	local raycast = Workspace:Raycast(start, (finish - start), parameters)
 
@@ -62,10 +61,10 @@ local function raycast(caster: Model, start: Vector3, finish: Vector3)
 	end
 end
 
-local function GetPotentialThreatsNearby(actor: any)
+local function GetPotentialThreatsNearby(actor: any) : {Model}
 	local threats = {}
 	for _, threat in GetPotentialThreats() do
-		local root = threat:FindFirstChild("HumanoidRootPart")
+		local root = threat:FindFirstChild("HumanoidRootPart") :: BasePart
 		if not root then continue end
 
 		local humanoid = threat:FindFirstChild("Humanoid") :: Humanoid
@@ -78,7 +77,7 @@ local function GetPotentialThreatsNearby(actor: any)
 	return threats
 end
 
-local function GetAlliesNearby(actor: any)
+local function GetAlliesNearby(actor: any) : {Model}
 	local allies = {}
 	for _, ally in CollectionService:GetTagged("Human") do
 		if not ally:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -96,7 +95,7 @@ local function GetAlliesNearby(actor: any)
 	return allies
 end
 
-local function GetItemsNearby(actor: any)
+local function GetItemsNearby(actor: any) : {Model}
 	local items = {}
 	for _, item in CollectionService:GetTagged("Item") do
 		if not item:FindFirstAncestorWhichIsA("Workspace") then continue end
@@ -106,7 +105,7 @@ local function GetItemsNearby(actor: any)
 	return items
 end
 
-local function GetResourcesNearby(actor: any)
+local function GetResourcesNearby(actor: any) : {Model}
 	local resources = {}
 	for _, resource in CollectionService:GetTagged("Resource") do
 		if not resource:FindFirstAncestorWhichIsA("Workspace") then continue end
