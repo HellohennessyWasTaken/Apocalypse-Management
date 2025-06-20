@@ -32,8 +32,13 @@ local DayNightService = {
 }
 
 function DayNightService:UpdateLighting()
-	Lighting.Brightness = DayNightService.IsDay and 1 or 0.2
-	Lighting.OutdoorAmbient = DayNightService.IsDay and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(50, 50, 100)
+	if DayNightService.IsDay then
+		Lighting.Brightness = 1
+		Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+	else
+		Lighting.Brightness = 0.2
+		Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 100)
+	end
 end
 
 function DayNightService:Transition()
