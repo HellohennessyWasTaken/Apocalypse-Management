@@ -11,9 +11,7 @@ local Workspace = game:GetService("Workspace")
 
 --< FOLDERS >--
 
-
 --< DEPENDENCIES >--
-
 local HumanComponent = require(ServerStorage.Components.HumanComponent)
 
 --< MAIN >--
@@ -43,14 +41,12 @@ end
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
 local function raycast(caster: Model, start: Vector3, finish: Vector3) : boolean
-	parameters.FilterDescendantsInstances = {caster}
-	do
-		local temp
-		temp = GetPotentialThreats()
-		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
-		temp = getHumans()
-		table.move(temp, 1, #temp, #parameters.FilterDescendantsInstances+1)
-	end
+	local descendantsInstancesToFilter = {caster} :: {Instance}
+	local temp = GetPotentialThreats()
+	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	temp = getHumans()
+	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	parameters.FilterDescendantsInstances = descendantsInstancesToFilter
 
 	local raycast = Workspace:Raycast(start, (finish - start), parameters)
 
@@ -89,7 +85,6 @@ local function GetAlliesNearby(actor: any) : {Model}
 		if (not humanoid) or (humanoid.Health <= 0) then continue end
 
 		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, root.Position, actor.ViewRange/2) then continue end
-
 		table.insert(allies, ally)
 	end
 	return allies
