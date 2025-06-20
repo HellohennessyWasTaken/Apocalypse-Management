@@ -54,10 +54,8 @@ end
 function CollisionService:KnitStart()
 	for _, player in Players:GetPlayers() do
 		if player.Character then
-			setCollisionGroup(player.Character, "Player")
+			onCharacterAdded(player.Character)
 		end
-		
-		onCharacterAdded(player.Character)
 	end
 	
 	Players.PlayerAdded:Connect(function(player)
