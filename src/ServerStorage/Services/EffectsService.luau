@@ -15,7 +15,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local EffectsService: Service = {
+local EffectsService = {
 	Name = script.Name,
 	Client = {
 		ReplicateEffectSignal = Knit.CreateUnreliableSignal()

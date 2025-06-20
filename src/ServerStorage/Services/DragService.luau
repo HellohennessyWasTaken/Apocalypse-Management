@@ -15,7 +15,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local DragService: Service = {
+local DragService = {
 	Name = script.Name,
 	Client = {
 		RequestDragRemoteSignal = Knit.CreateSignal()

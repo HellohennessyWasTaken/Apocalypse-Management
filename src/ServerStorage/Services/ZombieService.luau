@@ -55,7 +55,7 @@ local function raycast(caster: Model, start: Vector3, finish: Vector3)
 	end
 end
 
-local ZombieService: Service = {
+local ZombieService = {
 	Name = script.Name,
 	Client = {},
 	HumanComponents = {}

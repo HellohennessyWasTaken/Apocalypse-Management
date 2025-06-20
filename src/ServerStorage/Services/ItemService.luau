@@ -15,7 +15,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local ItemService: Service = {
+local ItemService = {
 	Name = script.Name,
 	Client = {
 		itemPickUpSignal = Knit.CreateSignal(),

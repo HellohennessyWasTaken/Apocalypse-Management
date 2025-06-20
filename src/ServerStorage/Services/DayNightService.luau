@@ -22,9 +22,7 @@ local DAY_DURATION: number = 10
 local NIGHT_DURATION: number = 10
 local TRANSITION_TIME: number = 5
 
-local tween: Tween?
-
-local DayNightService: Service = {
+local DayNightService = {
 	Name = script.Name,
 	IsDay = true :: boolean,
 	Client = {
@@ -44,6 +42,7 @@ end
 function DayNightService:Cycle()
 	local goal = {}
 	local tweenInfo = TweenInfo.new(24, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+	local tween: Tween
 	
 	while true do
 		goal = { ClockTime = 23.99 }

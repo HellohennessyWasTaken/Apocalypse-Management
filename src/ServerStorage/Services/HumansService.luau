@@ -106,7 +106,7 @@ local function GetResourcesNearby(actor: any)
 	return resources
 end
 
-local HumansService: Service = {
+local HumansService = {
 	Name = script.Name,
 	Client = {},
 	HumanComponents = {}

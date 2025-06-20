@@ -18,7 +18,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local GameService: Service = {
+local GameService = {
 	Name = script.Name,
 	Client = {},
 }
