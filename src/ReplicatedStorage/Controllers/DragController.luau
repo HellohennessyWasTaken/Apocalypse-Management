@@ -12,18 +12,14 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 --< FOLDERS >--
-local Assets = ReplicatedStorage.Assets
 local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local Signal = require(Packages.Signal)
-local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera"))
+local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera")) 
 
 --< MAIN >--
-local Mouse = Player:GetMouse()
-local PlayerGui = Player.PlayerGui
-
 local CurrentCamera = Workspace.CurrentCamera
 
 local DragController = {
@@ -41,15 +37,13 @@ local DragController = {
 function DragController:KnitInit()
 	DragController.HoldTarget.Parent = Workspace.Logic
 	DragController.AlignPosition.Parent = Workspace.Logic
-	DragController.AlignPosition.Attachment1 = DragController.HoldTarget.Attachment
+	DragController.AlignPosition.Attachment1 = DragController.HoldTarget:FindFirstChild("Attachment") :: Attachment
 end
 
 function DragController:KnitStart()	
 	local DragService = Knit.GetService("DragService")
 
 	UserInputService.InputChanged:Connect(function(input, gameProcessedEvent)
-		if gameProcessedEvent then return end
-
 		if (input.UserInputType == Enum.UserInputType.MouseMovement) then
 			local subjectPosition = BaseCamera:GetSubjectPosition() :: Vector3?
 			if (subjectPosition == nil) then return end
