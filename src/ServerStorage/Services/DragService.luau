@@ -20,7 +20,7 @@ local DragService = {
 	Client = {
 		RequestDragRemoteSignal = Knit.CreateSignal()
 	},
-	EnumStatus = {
+	Statuses = {
 		Start = "Start",
 		Continue = "Continue",
 		End = "End"
@@ -29,7 +29,7 @@ local DragService = {
 
 function DragService:KnitInit()
 	DragService.Client.RequestDragRemoteSignal:Connect(function(player: Player, object: Instance, status: string)
-		if (status ~= DragService.EnumStatus.Start) and (status ~= DragService.EnumStatus.Continue) and (status ~= DragService.EnumStatus.End) then
+		if (status ~= DragService.Statuses.Start) and (status ~= DragService.Statuses.Continue) and (status ~= DragService.Statuses.End) then
 			warn(script.Name, "Unsupported status")
 		end
 		
@@ -52,9 +52,9 @@ function DragService:KnitInit()
 			end
 		end
 		
-		if (status == DragService.EnumStatus.Start) then
+		if (status == DragService.Statuses.Start) then
 			object:SetNetworkOwner(player)
-		elseif (status == DragService.EnumStatus.End) then
+		elseif (status == DragService.Statuses.End) then
 			object:SetNetworkOwner(nil)
 		end
 	end)
