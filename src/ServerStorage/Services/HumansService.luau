@@ -23,6 +23,11 @@ local HumanComponent = require(ServerStorage.Components.HumanComponent)
 --})
 
 --< MAIN >--
+@native
+local function checkMagnitudeBelowThreshold(a: Vector3, b: Vector3, threshold: number): boolean
+	return (a - b).Magnitude < threshold
+end
+
 local function GetPotentialThreats()
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
@@ -60,10 +65,12 @@ local function GetPotentialThreatsNearby(actor: any)
 	for _, threat in GetPotentialThreats() do
 		local root = threat:FindFirstChild("HumanoidRootPart")
 		if not root then continue end
+
 		local humanoid = threat:FindFirstChild("Humanoid") :: Humanoid
-		if not humanoid or humanoid.Health <= 0 then continue end
-		local distance = (actor.HumanoidRootPart.Position - root.Position).Magnitude
-		if distance > actor.ViewRange/2 then continue end
+		if not humanoid or (humanoid.Health <= 0) then continue end
+
+		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, root.Position, actor.ViewRange/2) then continue end
+
 		table.insert(threats, threat)
 	end
 	return threats
@@ -73,12 +80,15 @@ local function GetAlliesNearby(actor: any)
 	local allies = {}
 	for _, ally in CollectionService:GetTagged("Human") do
 		if not ally:FindFirstAncestorWhichIsA("Workspace") then continue end
+
 		local root = ally:FindFirstChild("HumanoidRootPart")
 		if not root then continue end
+
 		local humanoid = ally:FindFirstChild("Humanoid") :: Humanoid
-		if not humanoid or humanoid.Health <= 0 then continue end
-		local distance = (actor.HumanoidRootPart.Position - root.Position).Magnitude
-		if distance > actor.ViewRange/2 then continue end
+		if (not humanoid) or (humanoid.Health <= 0) then continue end
+
+		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, root.Position, actor.ViewRange/2) then continue end
+
 		table.insert(allies, ally)
 	end
 	return allies
@@ -88,8 +98,7 @@ local function GetItemsNearby(actor: any)
 	local items = {}
 	for _, item in CollectionService:GetTagged("Item") do
 		if not item:FindFirstAncestorWhichIsA("Workspace") then continue end
-		local distance = (actor.HumanoidRootPart.Position - item.PrimaryPart.Position).Magnitude
-		if distance > actor.ViewRange/2 then continue end
+		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, item.PrimaryPart.Position, actor.ViewRange/2) then continue end
 		table.insert(items, item)
 	end
 	return items
@@ -99,8 +108,7 @@ local function GetResourcesNearby(actor: any)
 	local resources = {}
 	for _, resource in CollectionService:GetTagged("Resource") do
 		if not resource:FindFirstAncestorWhichIsA("Workspace") then continue end
-		local distance = (actor.HumanoidRootPart.Position - resource.PrimaryPart.Position).Magnitude
-		if distance > actor.ViewRange/2 then continue end
+		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, resource.PrimaryPart.Position, actor.ViewRange/2) then continue end
 		table.insert(resources, resource)
 	end
 	return resources
@@ -140,7 +148,7 @@ function HumansService:KnitStart()
 
 				for _, potentialThreat: Model in potentialThreats do
 					local potentialThreatHumanoid = potentialThreat:FindFirstChild("Humanoid") :: Humanoid
-					if not potentialThreatHumanoid or potentialThreatHumanoid.Health <= 0 then
+					if not potentialThreatHumanoid or (potentialThreatHumanoid.Health <= 0) then
 						continue
 					end
 
@@ -180,7 +188,7 @@ function HumansService:KnitStart()
 					end
 				end
 
-				if human.Threat and human.Threat:FindFirstChild("Humanoid").Health > 0 then
+				if human.Threat and human.Threat.Humanoid.Health > 0 then
 					if os.clock() - human.LastTimeSawThreat < human.MemoryTime then
 						continue		
 					end
