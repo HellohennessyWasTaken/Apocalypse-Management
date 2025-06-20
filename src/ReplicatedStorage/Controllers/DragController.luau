@@ -32,9 +32,9 @@ local DragController = {
 		Continue = "Continue",
 		End = "End"
 	},
+	DragSignal = Signal.new(),
 	HoldTarget = ReplicatedStorage.Logic.HoldTarget:Clone(),
 	AlignPosition = ReplicatedStorage.Logic.AlignPosition:Clone(),
-	DragSignal = Signal.new()
 }
 
 function DragController:KnitInit()
