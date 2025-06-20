@@ -23,7 +23,7 @@ end
 local function GetPotentialThreats() : {Model}
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
-		if not threat:IsDescendantOf("Workspace") then continue end
+		if not threat:IsDescendantOf(Workspace) then continue end
 		table.insert(threats, threat)
 	end
 	return threats
@@ -32,7 +32,7 @@ end
 local function getHumans() : {Model}
 	local targets = {}
 	for _, target in CollectionService:GetTagged("Human") do
-		if not target:IsDescendantOf("Workspace") then continue end
+		if not target:IsDescendantOf(Workspace) then continue end
 		table.insert(targets, target)
 	end
 	return targets
