@@ -22,7 +22,7 @@ local ZombieAsset = ZombieAssetFolder.Zombie
 local function GetPotentialTargets() : {Model}
 	local targets = {}
 	for _, target in CollectionService:GetTagged("Human") do
-		if not target:FindFirstAncestorWhichIsA("Workspace") then continue end
+		if not target:IsDescendantOf("Workspace") then continue end
 		table.insert(targets, target)
 	end
 	return targets
@@ -31,7 +31,7 @@ end
 local function getZombies() : {Model}
 	local threats = {}
 	for _, threat in CollectionService:GetTagged("Zombie") do
-		if not threat:FindFirstAncestorWhichIsA("Workspace") then continue end
+		if not threat:IsDescendantOf("Workspace") then continue end
 		table.insert(threats, threat)
 	end
 	return threats
@@ -40,12 +40,13 @@ end
 local parameters = RaycastParams.new()
 parameters.FilterType = Enum.RaycastFilterType.Exclude
 local function raycast(caster: Model, start: Vector3, finish: Vector3)
-	local descendantsInstancesToFilter = {caster} :: {Instance}
-	local temp = GetPotentialTargets()
-	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
-	temp = getZombies()
-	table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
-	parameters.FilterDescendantsInstances = descendantsInstancesToFilter
+	-- local descendantsInstancesToFilter = {caster} :: {Instance}
+	-- local temp = GetPotentialTargets()
+	-- table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	-- temp = getZombies()
+	-- table.move(temp, 1, #temp, #descendantsInstancesToFilter+1)
+	-- parameters.FilterDescendantsInstances = descendantsInstancesToFilter
+	parameters.FilterDescendantsInstances = {caster, GetPotentialTargets(), getZombies()()}
 
 	local raycast = workspace:Raycast(start, (finish - start), parameters)
 
