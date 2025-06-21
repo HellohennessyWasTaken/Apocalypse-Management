@@ -1,4 +1,42 @@
-*.DS_Store
-*.log
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code settings
 .vscode/
+
+# Rojo build artifacts (if any generated locally)
+*.rbxm
+*.rbxmx
+*.rbxl
+*.rbxlx
 sourcemap.json
+
+# Roblox Studio backup files
+*.autosave.lua
+*.rbxl.autosave
+*.rbxlx.autosave
+*.rbxm.autosave
+*.rbxmx.autosave
+
+# Luau compiled cache (if using external tools that generate cache)
+luau-cache/
+
+# Node/npm (if you use tools like eslint or prettier via npm)
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Logs or temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Optional: ignore secrets
+.env
+.env.local
+
+# Optional: ignore Roblox API dump tools
+api-dump.json
