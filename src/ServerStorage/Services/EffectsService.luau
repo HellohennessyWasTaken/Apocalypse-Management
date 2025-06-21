@@ -13,12 +13,14 @@ local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
+local Packet = require(ReplicatedStorage.Modules.Packet)
 
 --< MAIN >--
 local EffectsService = {
 	Name = script.Name,
 	Client = {
-		ReplicateEffectSignal = Knit.CreateUnreliableSignal()
+		ReplicateEffectSignal = Knit.CreateUnreliableSignal(),
+		Packet("ReplicateEffect"),
 	},
 }
 
