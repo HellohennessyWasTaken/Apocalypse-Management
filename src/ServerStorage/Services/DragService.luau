@@ -8,8 +8,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --< FOLDERS >--
-local Assets = ReplicatedStorage.Assets
-local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
@@ -51,7 +49,11 @@ function DragService:KnitInit()
 				return
 			end
 		end
-		
+
+		if not object:IsA("BasePart") then
+			return
+		end
+
 		if (status == DragService.Statuses.Start) then
 			object:SetNetworkOwner(player)
 		elseif (status == DragService.Statuses.End) then
