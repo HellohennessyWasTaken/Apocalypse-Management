@@ -20,7 +20,6 @@ local TreesFolder = ServerConfig.Trees
 
 --< DEPENDENCIES >--
 local Component = require(ReplicatedStorage.Packages.Component)
-local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local BehaviorTreeCreator = require(ServerModules.BehaviorTreeCreator)
 
@@ -179,15 +178,16 @@ end
 function HumanComponent:Start()
 	task.wait(3)
 
+	local min, max = 10, 25
 	coroutine.resume(coroutine.create(function()
-		task.wait(math.random(10,25))
+		task.wait(math.random(min,max))
 		while task.wait() do			
 			if self.Mood then
 				if self.Humanoid.Health <= 0 then break end
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.Mood)
 				end
-				task.wait(math.random(10,25))
+				task.wait(math.random(min,max))
 			end
 			
 			if (#self.Emotion >= 1) then
@@ -195,7 +195,7 @@ function HumanComponent:Start()
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.Emotion[math.random(1, #self.Emotion)])
 				end
-				task.wait(math.random(10,25))
+				task.wait(math.random(min,max))
 			end
 			
 			if (#self.State >= 1) then
@@ -203,7 +203,7 @@ function HumanComponent:Start()
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.State[math.random(1, #self.State)])
 				end
-				task.wait(math.random(10,25))
+				task.wait(math.random(min,max))
 			end
 		end
 	end))
@@ -231,8 +231,9 @@ function HumanComponent:Start()
 		end
 	end))
 	
+	local _result
 	while task.wait(0.2) do
-		local result = Tree:Run(self)
+		_result = Tree:Run(self)
 	end
 end
 
