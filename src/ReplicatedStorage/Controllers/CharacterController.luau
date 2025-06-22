@@ -30,11 +30,11 @@ function CharacterController:KnitInit()
 		local character = Player.Character
 		if not character then return Enum.ContextActionResult.Sink end
 
-		local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+		local humanoidRootPart = character:FindFirstChild("HumanoidRootPart") :: BasePart
 		if not humanoidRootPart then return Enum.ContextActionResult.Sink end
 		
 		local targetPosition = Mouse.Hit.Position + Vector3.new(0, 3, 0)
-		humanoidRootPart.CFrame = CFrame.new(targetPosition)
+		humanoidRootPart.CFrame = CFrame.new(targetPosition, targetPosition + humanoidRootPart.CFrame.LookVector)
 
 		return Enum.ContextActionResult.Sink
 	end, false, Enum.KeyCode.T)
