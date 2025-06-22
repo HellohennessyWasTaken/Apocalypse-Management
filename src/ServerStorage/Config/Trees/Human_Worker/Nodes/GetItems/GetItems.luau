@@ -86,12 +86,22 @@ function node.run(self)
 					end
 					
 					if (self.HumanoidRootPart.Position - closestItem.PrimaryPart.Position).Magnitude <= math.abs(self.BaseAttackRange - 0.5) then
-						return ItemService:PickUp(self, closestItem)
+						result = ItemService:PickUp(self, closestItem)
+						if result then
+							return SUCCESS
+						else
+							return FAIL
+						end
 					end
 				end
 
 				self.WalkRandomlyStartTime = os.clock()
-				return ItemService:PickUp(self, closestItem)
+				result = ItemService:PickUp(self, closestItem)
+				if result then
+					return SUCCESS
+				else
+					return FAIL
+				end
 			else
 				self.Humanoid.Jump = true
 				task.wait(1)
@@ -99,13 +109,23 @@ function node.run(self)
 			end
 		else
 			if (self.HumanoidRootPart.Position - closestItem.PrimaryPart.Position).Magnitude <= math.abs(self.BaseAttackRange - 0.5) then
-				return ItemService:PickUp(self, closestItem)
+				result = ItemService:PickUp(self, closestItem)
+				if result then
+					return SUCCESS
+				else
+					return FAIL
+				end
 			end
 			
 			self.Humanoid:MoveTo(closestItem.PrimaryPart.Position)
 			
 			self.WalkRandomlyStartTime = os.clock()
-			return ItemService:PickUp(self, closestItem)
+			result = ItemService:PickUp(self, closestItem)
+			if result then
+				return SUCCESS
+			else
+				return FAIL
+			end
 		end
 	end
 	

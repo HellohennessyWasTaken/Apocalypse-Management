@@ -24,15 +24,27 @@ local ItemService = {
 	debounce = {}
 }
 
-function ItemService:PickUp(actor: any, item: Model)	
+function ItemService:GetItemData(itemName: string): any
+	local itemData = require(ReplicatedStorage.Config.Items:FindFirstChild(itemName, true)) :: any
+	if not itemData then
+		error(`Item {itemName} does not exist in the configuration.`)
+	end
+	return itemData
+end
+
+function ItemService:PickUp(actor: any, item: Model) : boolean
+	if not item.PrimaryPart then
+		warn("Item does not have a PrimaryPart set.")
+		return false
+	end
 	if table.find(ItemService.debounce, item) then
-		return 2
+		return false
 	end
 	table.insert(ItemService.debounce, item)
 	
 	local distance = (actor.HumanoidRootPart.Position - item.PrimaryPart.Position).Magnitude
 	if distance <= actor.GetAttackRange() then
-		local itemData = require(ReplicatedStorage.Config.Items:FindFirstChild(item.Name, true))
+		local itemData = ItemService:GetItemData(item.Name)
 		if actor.Inventory[itemData.Type] then ItemService:Drop(actor, actor.Inventory[itemData.Type].Name) end
 		actor.Inventory[itemData.Type] = itemData
 		ItemService.Client.itemPickUpSignal:FireAll(actor.Character, item.Name)
@@ -43,17 +55,17 @@ function ItemService:PickUp(actor: any, item: Model)
 		
 		print(`{actor.Character.Name} picked up {item}`)
 		print(actor.Inventory)
-		
-		return 1
+
+		return true
 	end
 	
 	local index = table.find(ItemService.debounce, item)
 	table.remove(ItemService.debounce, index)
-	return 2
+	return false
 end
 
 function ItemService:Drop(actor: any, itemName: string)
-	local itemData = require(ReplicatedStorage.Config.Items:FindFirstChild(itemName, true))
+	local itemData = ItemService:GetItemData(itemName)
 	actor.Inventory[itemData.Type] = nil
 	ItemService.Client.itemDropSignal:FireAll(actor.Character, itemName)
 	

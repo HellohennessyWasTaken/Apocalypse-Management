@@ -66,7 +66,12 @@ function node.run(self)
 				end
 
 				if (self.HumanoidRootPart.Position - closestFood.PrimaryPart.Position).Magnitude <= math.abs(self.BaseAttackRange - 0.5) then
-					return ItemService:PickUp(self, closestFood)
+					result = ItemService:PickUp(self, closestFood)
+					if result then
+						return SUCCESS
+					else
+						return FAIL
+					end
 				end
 			end
 
@@ -79,7 +84,12 @@ function node.run(self)
 		end
 	else
 		if (self.HumanoidRootPart.Position - closestFood.PrimaryPart.Position).Magnitude <= math.abs(self.BaseAttackRange - 0.5) then
-			return ItemService:PickUp(self, closestFood)
+			result = ItemService:PickUp(self, closestFood)
+			if result then
+				return SUCCESS
+			else
+				return FAIL
+			end
 		end
 
 		self.Humanoid:MoveTo(closestFood.PrimaryPart.Position)
