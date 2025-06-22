@@ -15,16 +15,16 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
-local TestService = {
+local TestController = {
 	Name = script.Name,
 }
 
-function TestService:KnitInit()
+function TestController:KnitInit()
 
 end
 
-function TestService:KnitStart()
+function TestController:KnitStart()
 
 end
 
-return TestService
+return TestController
