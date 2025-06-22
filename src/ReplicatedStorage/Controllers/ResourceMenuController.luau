@@ -16,29 +16,24 @@ local Packages = ReplicatedStorage.Packages
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
+local InterfaceController = require(ReplicatedStorage.Controllers.InterfaceController)
+
 --< MAIN >--
 local PlayerGui = Player.PlayerGui
-local Core: ScreenGui
-local UIBlur: BlurEffect
-local ResourceMenuFrame: Frame
 
 local ResourceMenuController = {
 	Name = script.Name,
+	MainFrame = InterfaceController.ResourceMenuFrame,
+	IsActive = false,
 }
 
 function ResourceMenuController:KnitInit()
-	Core  = PlayerGui:WaitForChild("Core")
-	UIBlur = Lighting:WaitForChild("UIBlur")
-
-	ResourceMenuFrame = Core.Resource 
-
-	ResourceMenuFrame:GetPropertyChangedSignal("Visible"):Connect(function(visible: boolean)
-		UIBlur.Enabled = ResourceMenuFrame.Visible
+	ResourceMenuController.MainFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+		InterfaceController.UIBlur.Enabled = ResourceMenuController.MainFrame.Visible
+		ResourceMenuController.IsActive = ResourceMenuController.MainFrame.Visible
 	end)
 end
 
-function ResourceMenuController:KnitStart()
-	
-end
+function ResourceMenuController:KnitStart() end
 
 return ResourceMenuController
