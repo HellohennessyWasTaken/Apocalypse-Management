@@ -16,7 +16,7 @@ local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
-local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera"))
+local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera")) :: any
 
 --< MAIN >--
 local Player = Players.LocalPlayer
@@ -42,41 +42,42 @@ end
 function CoreController:KnitStart()	
 	HoveringHighlight = PlayerGui:WaitForChild("Hovering", 60)
 	
-	--UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-	--	--if gameProcessedEvent then return end
+	-- UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+	-- 	--if gameProcessedEvent then return end
 		
-	--	--if input.UserInputType == Enum.UserInputType.MouseButton1 then
-	--	--	if not HoveredObject then
-	--	--		HalfClickedHoveredObject = nil
-	--	--	else
-	--	--		HalfClickedHoveredObject = HoveredObject
-	--	--	end
-	--	--end
-	--end)
+	-- 	--if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	-- 	--	if not HoveredObject then
+	-- 	--		HalfClickedHoveredObject = nil
+	-- 	--	else
+	-- 	--		HalfClickedHoveredObject = HoveredObject
+	-- 	--	end
+	-- 	--end
+	-- end)
 	
-	--UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
-	--	--if gameProcessedEvent then return end
+	-- UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
+	-- 	--if gameProcessedEvent then return end
 
-	--	--if input.UserInputType == Enum.UserInputType.MouseButton1 then
-	--	--	if not (HoveredObject and HalfClickedHoveredObject) then
-	--	--		print("1")
-	--	--		SelectedObject = nil
-	--	--	elseif HalfClickedHoveredObject == HoveredObject then
-	--	--		print("2")
-	--	--		SelectedObject = HoveredObject		
-	--	--	else
-	--	--		print("3")
-	--	--		SelectedObject = nil
-	--	--	end
-	--	--	PlayerGui.Selecting.Adornee = SelectedObject
-	--	--end
-	--end)
+	-- 	--if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	-- 	--	if not (HoveredObject and HalfClickedHoveredObject) then
+	-- 	--		print("1")
+	-- 	--		SelectedObject = nil
+	-- 	--	elseif HalfClickedHoveredObject == HoveredObject then
+	-- 	--		print("2")
+	-- 	--		SelectedObject = HoveredObject		
+	-- 	--	else
+	-- 	--		print("3")
+	-- 	--		SelectedObject = nil
+	-- 	--	end
+	-- 	--	PlayerGui.Selecting.Adornee = SelectedObject
+	-- 	--end
+	-- end)
 	
+	local _tempHoveredObject: Instance? = nil
 	UserInputService.InputChanged:Connect(function(input, gameProcessedEvent)
 		if gameProcessedEvent then return end
 
 		if input.UserInputType == Enum.UserInputType.MouseMovement then
-			local _tempHoveredObject: Instance
+			_tempHoveredObject = nil
 			
 			local subjectPosition = BaseCamera:GetSubjectPosition() :: Vector3?
 			if (not Mouse.Target) or (subjectPosition == nil) or ((Mouse.Target.Position - subjectPosition).Magnitude > 32) then
@@ -91,7 +92,7 @@ function CoreController:KnitStart()
 				_tempHoveredObject = Mouse.Target
 			end
 			
-			if not _tempHoveredObject:HasTag("Draggable") then
+			if _tempHoveredObject and not _tempHoveredObject:HasTag("Draggable") then
 				HoveringHighlight.Adornee = nil
 				HoveredObject = nil
 				return
