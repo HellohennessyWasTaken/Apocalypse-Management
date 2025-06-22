@@ -21,8 +21,8 @@ local ZombieAssetFolder = Assets.Zombies
 local ZombieAsset = ZombieAssetFolder.Zombie
 
 local function GetPotentialTargets() : {Model}
-	local targets = {}
-	for _, target in CollectionService:GetTagged("Human") do
+	local targets: {Model} = {}
+	for _, target: Model in CollectionService:GetTagged("Human") do
 		if not target:IsDescendantOf(Workspace) then continue end
 		table.insert(targets, target)
 	end
@@ -30,8 +30,8 @@ local function GetPotentialTargets() : {Model}
 end
 
 local function getZombies() : {Model}
-	local threats = {}
-	for _, threat in CollectionService:GetTagged("Zombie") do
+	local threats: {Model} = {}
+	for _, threat: Model in CollectionService:GetTagged("Zombie") do
 		if not threat:IsDescendantOf(Workspace) then continue end
 		table.insert(threats, threat)
 	end
@@ -55,7 +55,6 @@ end
 local ZombieService = {
 	Name = script.Name,
 	Client = {},
-	HumanComponents = {}
 }
 
 function ZombieService:SpawnZombie(cFrame: CFrame)

@@ -22,7 +22,7 @@ end
 
 local function GetPotentialThreats() : {Model}
 	local threats = {}
-	for _, threat in CollectionService:GetTagged("Zombie") do
+	for _, threat: Model in CollectionService:GetTagged("Zombie") do
 		if not threat:IsDescendantOf(Workspace) then continue end
 		table.insert(threats, threat)
 	end
@@ -31,7 +31,7 @@ end
 
 local function getHumans() : {Model}
 	local targets = {}
-	for _, target in CollectionService:GetTagged("Human") do
+	for _, target: Model in CollectionService:GetTagged("Human") do
 		if not target:IsDescendantOf(Workspace) then continue end
 		table.insert(targets, target)
 	end
@@ -54,7 +54,7 @@ end
 
 local function GetPotentialThreatsNearby(actor: any) : {Model}
 	local threats = {}
-	for _, threat in GetPotentialThreats() do
+	for _, threat: Model in GetPotentialThreats() do
 		local root = threat:FindFirstChild("HumanoidRootPart") :: BasePart
 		if not root then continue end
 
@@ -69,11 +69,11 @@ local function GetPotentialThreatsNearby(actor: any) : {Model}
 end
 
 local function GetAlliesNearby(actor: any) : {Model}
-	local allies = {}
-	for _, ally in CollectionService:GetTagged("Human") do
-		if not ally:FindFirstAncestorWhichIsA("Workspace") then continue end
+	local allies: {Model} = {}
+	for _, ally: Model in CollectionService:GetTagged("Human") do
+		if not ally:IsDescendantOf(Workspace) then continue end
 
-		local root = ally:FindFirstChild("HumanoidRootPart")
+		local root = ally:FindFirstChild("HumanoidRootPart") :: BasePart
 		if not root then continue end
 
 		local humanoid = ally:FindFirstChild("Humanoid") :: Humanoid
@@ -86,9 +86,10 @@ local function GetAlliesNearby(actor: any) : {Model}
 end
 
 local function GetItemsNearby(actor: any) : {Model}
-	local items = {}
-	for _, item in CollectionService:GetTagged("Item") do
-		if not item:FindFirstAncestorWhichIsA("Workspace") then continue end
+	local items: {Model} = {}
+	for _, item: Model in CollectionService:GetTagged("Item") do
+		if not item:IsDescendantOf(Workspace) then continue end
+		if not item.PrimaryPart then continue end
 		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, item.PrimaryPart.Position, actor.ViewRange/2) then continue end
 		table.insert(items, item)
 	end
@@ -96,9 +97,10 @@ local function GetItemsNearby(actor: any) : {Model}
 end
 
 local function GetResourcesNearby(actor: any) : {Model}
-	local resources = {}
-	for _, resource in CollectionService:GetTagged("Resource") do
+	local resources: {Model} = {}
+	for _, resource: Model in CollectionService:GetTagged("Resource") do
 		if not resource:FindFirstAncestorWhichIsA("Workspace") then continue end
+		if not resource.PrimaryPart then continue end
 		if not checkMagnitudeBelowThreshold(actor.HumanoidRootPart.Position, resource.PrimaryPart.Position, actor.ViewRange/2) then continue end
 		table.insert(resources, resource)
 	end
