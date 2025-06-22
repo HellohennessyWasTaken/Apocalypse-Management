@@ -17,37 +17,35 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(Packages.Knit)
 local Icon = require(ReplicatedStorage.Modules.Icon)
 
-local RessourceMenuController
 
 --< MAIN >--
 local PlayerGui = Player.PlayerGui
-local Core: ScreenGui
-local UIBlur: BlurEffect
+local Core  = PlayerGui:WaitForChild("Core") :: ScreenGui
 
-local ResourceMenuFrame: Frame
-
-local ResourceController = {
+local InterfaceController = {
 	Name = script.Name,
+
+	Core  = Core,
+	ResourceMenuFrame = Core:WaitForChild("Resource") :: Frame,
+	--ProfessionMenuFrame = Core:WaitForChild("Profession") :: Frame,
+
+	UIBlur = Lighting:WaitForChild("UIBlur") :: BlurEffect,
 }
 
-function ResourceController:KnitInit()
-	Core  = PlayerGui:WaitForChild("Core")
-	UIBlur = Lighting:WaitForChild("UIBlur")
-	ResourceMenuFrame = Core:WaitForChild("Resource")
-	
-	UIBlur.Enabled = false
-	for	_, frame in Core:GetChildren() do
+function InterfaceController:KnitInit()
+	InterfaceController.UIBlur.Enabled = false
+	for	_, frame in InterfaceController.Core:GetChildren() do
 		if not frame:IsA("GuiObject") then continue end	
 		frame.Visible = false
 	end
 end
 
-function ResourceController:KnitStart()	
+function InterfaceController:KnitStart()	
 	Icon.new()
 		:setLabel("Inventory")
-		:bindToggleItem(ResourceMenuFrame)
+		:bindToggleItem(InterfaceController.ResourceMenuFrame)
 	Icon.new()
 		:setLabel("Professions")
 end
 
-return ResourceController
+return InterfaceController
