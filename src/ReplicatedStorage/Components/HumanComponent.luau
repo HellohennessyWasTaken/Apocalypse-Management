@@ -54,8 +54,13 @@ function HumanComponent:Construct()
 	
 	Knit.GetService("ItemService").itemPickUpSignal:Connect(function(obj: Model, item: string)
 		if obj ~= self.Character then return end
-		local itemData = require(ReplicatedStorage.Config.Items:FindFirstChild(item, true))
+		local itemData = require(ReplicatedStorage.Config.Items:FindFirstChild(item, true)) :: any
 		local model = itemData.Model:Clone() :: Model
+		if not model.PrimaryPart then
+			warn(`Item {item} does not have a PrimaryPart set.`)
+			model:Destroy()
+			return
+		end
 		model.Parent = self.Character
 		local attachment1 = model.PrimaryPart:FindFirstChild("Attachment") :: Attachment
 
