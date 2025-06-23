@@ -50,7 +50,7 @@ function ResourceMenuController:PopulateMenu()
 		-- local resourceIcon = resourceItem:WaitForChild("Icon") :: ImageLabel
 		-- local resourceAmount = resourceItem:WaitForChild("Amount") :: TextLabel
 
-		-- resourceIcon.Image = Assets.Resources[resourceName].Icon
+		-- resourceIcon.Image = Assets.Items.Resources[resourceName].Icon
 		-- resourceAmount.Text = tostring(amount)
 
 		-- resourceItem.InputBegan:Connect(function()
