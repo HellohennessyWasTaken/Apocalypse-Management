@@ -17,6 +17,7 @@ local Knit = require(ReplicatedStorage.Packages.Knit)
 
 --< MAIN >--
 local Mouse = Player:GetMouse()
+local TeleportOffset = Vector3.new(0, 3, 0) -- Offset for teleportation height
 
 local CharacterController = {
 	Name = script.Name,
@@ -33,7 +34,7 @@ function CharacterController:KnitInit()
 		local humanoidRootPart = character:FindFirstChild("HumanoidRootPart") :: BasePart
 		if not humanoidRootPart then return Enum.ContextActionResult.Sink end
 		
-		local targetPosition = Mouse.Hit.Position + Vector3.new(0, 3, 0)
+		local targetPosition = Mouse.Hit.Position + TeleportOffset
 		humanoidRootPart.CFrame = CFrame.new(targetPosition, targetPosition + humanoidRootPart.CFrame.LookVector)
 
 		return Enum.ContextActionResult.Sink
