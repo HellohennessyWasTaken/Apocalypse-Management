@@ -46,7 +46,7 @@ function ItemService:PickUp(actor: any, item: Model) : boolean
 	if distance <= actor.GetAttackRange() then
 		local itemData = ItemService:GetItemData(item.Name)
 		if actor.Inventory[itemData.Type] then ItemService:Drop(actor, actor.Inventory[itemData.Type].Name) end
-		actor.Inventory[itemData.Type] = itemData
+		actor.Inventory[itemData.Type] = itemData.Meta
 		ItemService.Client.itemPickUpSignal:FireAll(actor.Character, item.Name)
 		item:Destroy()
 		

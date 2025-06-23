@@ -1,11 +1,12 @@
 local Food = {
 	Name = "Food",
 	Type = "Resource",
-	Category = "Food",
-	Model = game.ReplicatedStorage.Assets.Resources.Food,
-
-	Hunger = 15,
-	Energy = 5
+	Model = game.ReplicatedStorage.Assets.Items.Resources.Food,
+	
+	Meta = {
+		Hunger = 15,
+		Energy = 5
+	}
 }
 
 return Food
