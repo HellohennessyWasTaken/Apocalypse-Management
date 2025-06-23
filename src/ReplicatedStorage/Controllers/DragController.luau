@@ -17,7 +17,7 @@ local Packages = ReplicatedStorage.Packages
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local Signal = require(Packages.Signal)
-local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera")) 
+local BaseCamera = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("BaseCamera")) :: any
 
 --< MAIN >--
 local CurrentCamera = Workspace.CurrentCamera
