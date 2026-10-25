@@ -33,12 +33,11 @@ function node.run(self)
 	self.RaycastParams.FilterType = Enum.RaycastFilterType.Exclude
 	
 	local start = self.HumanoidRootPart.Position
-	local xRand = math.random(-10,10)
-	local zRand = math.random(-10,10)
-	local destination = Vector3.new(
-		math.clamp(self.HumanoidRootPart.Position.X + xRand, -30, 30),
-		0,
-		math.clamp(self.HumanoidRootPart.Position.Z + zRand, -30, 30)
+	const origin = self.WanderOrigin
+	const destination = Vector3.new(
+		math.clamp(start.X + math.random(-10, 10), origin.X - self.WanderRadius, origin.X + self.WanderRadius),
+		start.Y,
+		math.clamp(start.Z + math.random(-10, 10), origin.Z - self.WanderRadius, origin.Z + self.WanderRadius)
 	)
 	
 	local result = workspace:Raycast(start, (destination - start), self.RaycastParams)

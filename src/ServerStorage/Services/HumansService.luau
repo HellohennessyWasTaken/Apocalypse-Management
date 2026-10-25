@@ -156,18 +156,14 @@ function HumansService:KnitStart()
 					local direction = (potentialThreatPosition - myPosition).Unit
 					local lookVector = myCFrame.LookVector
 
-					local dotProduct = direction:Dot(lookVector)
-					local angle = math.deg(math.acos(dotProduct))
+					-- clamped because float error can push the dot past 1, and acos would return NaN
+					const angle = math.deg(math.acos(math.clamp(direction:Dot(lookVector), -1, 1)))
 
 					local distance = (myPosition - potentialThreatPosition).Magnitude
 
-					if human.Alert then
-						if angle > human.AlertFieldOfView then continue end
-						if distance > human.AlertViewRange then continue end
-					else
-						if angle > human.FieldOfView then continue end
-						if distance > human.ViewRange then continue end
-					end
+					const inView = angle <= human.FieldOfView / 2 and distance <= human.ViewRange
+					const inAlertView = human.IsAlert and angle <= human.AlertFieldOfView / 2 and distance <= human.AlertRange
+					if not (inView or inAlertView) then continue end
 
 					if raycast(human.Character, myPosition, potentialThreatPosition) then
 						continue
@@ -177,7 +173,7 @@ function HumansService:KnitStart()
 						prevDist = distance
 						human.Threat = potentialThreat
 						human.IsAlert = true
-						human.LastTimeSawTarget = os.clock()
+						human.LastTimeSawThreat = os.clock()
 					end
 				end
 

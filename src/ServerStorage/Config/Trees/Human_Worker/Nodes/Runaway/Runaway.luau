@@ -19,7 +19,7 @@ function node.run(self)
 	self.RaycastParams.FilterDescendantsInstances = {self.Character, CollectionService:GetTagged("Entity")}
 	self.RaycastParams.FilterType = Enum.RaycastFilterType.Exclude
 	local start = self.HumanoidRootPart.Position
-	local destination = (self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Unit * 50
+	const destination = start + (start - self.Threat.PrimaryPart.Position).Unit * 50
 	local result = workspace:Raycast(start, (destination - start), self.RaycastParams)
 	
 	if result and result.Instance then

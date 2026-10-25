@@ -53,6 +53,8 @@ function ZombieComponent:Construct()
 	self.WalkRandomlyCooldownMin = 7
 	self.WalkRandomlyCooldownMax = 15
 	self.WalkRandomlyCooldown = math.random(self.WalkRandomlyCooldownMin, self.WalkRandomlyCooldownMax)
+	self.WanderOrigin = self.HumanoidRootPart.Position
+	self.WanderRadius = 30
 	
 	self.ViewRange = 50
 	self.FieldOfView = 180

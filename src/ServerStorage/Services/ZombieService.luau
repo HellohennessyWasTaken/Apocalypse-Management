@@ -90,18 +90,14 @@ function ZombieService:KnitStart()
 				local direction = (potentialTargetPosition - myPosition).Unit
 				local lookVector = myCFrame.LookVector
 
-				local dotProduct = direction:Dot(lookVector)
-				local angle = math.deg(math.acos(dotProduct))
+				-- clamped because float error can push the dot past 1, and acos would return NaN
+				const angle = math.deg(math.acos(math.clamp(direction:Dot(lookVector), -1, 1)))
 
 				local distance = (myPosition - potentialTargetPosition).Magnitude
 
-				if zombie.Alert then
-					if angle > zombie.AlertFieldOfView then continue end
-					if distance > zombie.AlertViewRange then continue end
-				else
-					if angle > zombie.FieldOfView then continue end
-					if distance > zombie.ViewRange then continue end
-				end
+				const inView = angle <= zombie.FieldOfView / 2 and distance <= zombie.ViewRange
+				const inAlertView = zombie.IsAlert and angle <= zombie.AlertFieldOfView / 2 and distance <= zombie.AlertRange
+				if not (inView or inAlertView) then continue end
 
 				if raycast(zombie.Character, myPosition, potentialTargetPosition) then
 					continue
@@ -121,7 +117,7 @@ function ZombieService:KnitStart()
 				end
 			end
 
-			zombie.IsAlert = true
+			zombie.IsAlert = false
 			zombie.Target = nil
 			continue
 		end
