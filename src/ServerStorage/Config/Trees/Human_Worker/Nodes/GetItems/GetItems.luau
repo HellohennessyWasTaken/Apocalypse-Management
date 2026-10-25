@@ -23,21 +23,10 @@ function node.run(self)
 	
 	for _, item: Model in self.NearbyItems do
 		if not item.PrimaryPart then continue end
-		if Items[item.Name].Type == "Tool" and self.Inventory.Tool then
-			if self.Inventory.Tool.Power >= Items[item.Name].Power then
-				continue
-			end
-		end
-		if Items[item.Name].Type == "Helmet" and self.Inventory.Helmet then
-			if self.Inventory.Helmet.Power >= Items[item.Name].Power then
-				continue
-			end
-		end
-		if Items[item.Name].Type == "Armor" and self.Inventory.Armor then
-			if self.Inventory.Armor.Power >= Items[item.Name].Power then
-				continue
-			end
-		end
+		const itemData = Items[item.Name]
+		if not itemData then continue end
+		const heldItem = self.Inventory[itemData.Type]
+		if heldItem and heldItem.Power and heldItem.Power >= itemData.Meta.Power then continue end
 		
 		local newDistance = (item.PrimaryPart.Position - self.HumanoidRootPart.Position).Magnitude
 		if newDistance < distance then

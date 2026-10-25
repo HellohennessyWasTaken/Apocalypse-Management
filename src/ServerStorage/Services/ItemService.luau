@@ -44,9 +44,12 @@ function ItemService:PickUp(actor: any, item: Model) : boolean
 	
 	local distance = (actor.HumanoidRootPart.Position - item.PrimaryPart.Position).Magnitude
 	if distance <= actor.GetAttackRange() then
-		local itemData = ItemService:GetItemData(item.Name)
-		if actor.Inventory[itemData.Type] then ItemService:Drop(actor, actor.Inventory[itemData.Type].Name) end
-		actor.Inventory[itemData.Type] = itemData.Meta
+		const itemData = ItemService:GetItemData(item.Name)
+		const heldItem = actor.Inventory[itemData.Type]
+		if heldItem then ItemService:Drop(actor, heldItem.Name) end
+		const slot = table.clone(itemData.Meta)
+		slot.Name = itemData.Name
+		actor.Inventory[itemData.Type] = slot
 		ItemService.Client.itemPickUpSignal:FireAll(actor.Character, item.Name)
 		item:Destroy()
 		

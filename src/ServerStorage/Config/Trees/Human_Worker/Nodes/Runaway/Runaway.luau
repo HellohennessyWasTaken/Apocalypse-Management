@@ -12,6 +12,8 @@ end
 function node.finish(obj, status) end
 
 function node.run(self)
+	if not (self.Threat and self.Threat.PrimaryPart) then return SUCCESS end
+
 	self.Humanoid.WalkSpeed = self.BaseSpeed * 1.5
 	
 	self.RaycastParams.FilterDescendantsInstances = {self.Character, CollectionService:GetTagged("Entity")}
