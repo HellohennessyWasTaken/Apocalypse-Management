@@ -8,11 +8,11 @@
 
 --< SERVICES >--
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ChatService = game:GetService("Chat")
-local DebrisService = game:GetService("Debris")
+--local ChatService = game:GetService("Chat")
+--local DebrisService = game:GetService("Debris")
 
 --< FOLDERS >--
-local Config = ReplicatedStorage.Config
+--local Config = ReplicatedStorage.Config
 local Assets = ReplicatedStorage.Assets
 
 --< DEPENDENCIES >--
@@ -25,20 +25,20 @@ local Ragdoll = require(ReplicatedStorage.Modules.Ragdoll)
 local HumanModel = Assets.Humans.HumanModel
 
 local SkinColors = {
-	"Dark taupe",
-	"Brick yellow",
-	"Light orange"
+	BrickColor.new("Dark taupe").Number,
+	BrickColor.new("Brick yellow").Number,
+	BrickColor.new("Light orange").Number
 }
 
 local ShirtColors = {
-	"Cocoa",
-	"Oyster",
-	"Black",
+	BrickColor.new("Cocoa").Number,
+	BrickColor.new("Oyster").Number,
+	BrickColor.new("Black").Number,
 }
 
 local PantsColors = {
-	"Really black",
-	"Dark stone grey",
+	BrickColor.new("Really black").Number,
+	BrickColor.new("Really black").Number,
 }
 
 local HumanComponent = Component.new({
