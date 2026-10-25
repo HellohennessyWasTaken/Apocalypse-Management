@@ -65,7 +65,8 @@
 
 local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
-local IsStudio = RunService:IsRunning() and RunService:IsStudio()
+-- Opt-in: the per-run debug folder lookup is O(NPCs) per tick and swamps Studio profiling at scale
+local IsStudio = RunService:IsRunning() and RunService:IsStudio() and workspace:GetAttribute("BTreeLiveDebug") == true
 
 local BehaviorTree = {}
 
