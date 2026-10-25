@@ -19,6 +19,7 @@ local Component = require(ReplicatedStorage.Packages.Component)
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local Ragdoll = require(ReplicatedStorage.Modules.Ragdoll)
+const HitFlash = require(ReplicatedStorage.Modules.HitFlash)
 
 --< MAIN >--
 local ZombieModel = Assets.Zombies.ZombieModel
@@ -57,29 +58,7 @@ function HumanComponent:Start()
 	local oldHealth = self.Humanoid.Health
 	self.HealthConnection = self.Humanoid.HealthChanged:Connect(function(newHealth: number)
 		if oldHealth > newHealth then
-			for i,v in self.Character:GetChildren() do
-				if not v:IsA("BasePart") then continue end
-				if v.Name == "HumanoidRootPart" then continue end
-				local clone = v:Clone()
-				clone.BrickColor = BrickColor.new("Maroon")
-				clone.Material = Enum.Material.Glass
-				clone.Transparency = 0.6
-				clone.Size *= 1.1
-				clone.CanCollide = false
-				clone.Massless = true
-				for i,v in clone:GetChildren() do
-					if v:IsA("SpecialMesh") then continue end
-					task.defer(function() v:Destroy() end)
-				end
-				local weld = Instance.new("WeldConstraint")
-				weld.Parent = clone
-				weld.Part0 = clone
-				weld.Part1 = v
-				clone.Parent = workspace.Debris
-				task.delay(0.2, function()
-					clone:Destroy()
-				end)
-			end
+			HitFlash.Play(self.Character)
 		end
 		oldHealth = newHealth
 		
