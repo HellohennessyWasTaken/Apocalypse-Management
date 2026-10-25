@@ -45,6 +45,7 @@ local function onEntityAdded(entity: Model)
 end
 
 local function onResourceAdded(resource: Model)
+	if resource:HasTag("Entity") then return end
 	setCollisionGroup(resource, "Resource")
 	resource.DescendantAdded:Connect(function()
 		setCollisionGroup(resource, "Resource")
@@ -52,6 +53,7 @@ local function onResourceAdded(resource: Model)
 end
 
 local function onDraggableAdded(draggable: Model)
+	if draggable:HasTag("Entity") then return end
 	setCollisionGroup(draggable, "Draggable")
 	draggable.DescendantAdded:Connect(function()
 		setCollisionGroup(draggable, "Draggable")
@@ -64,11 +66,17 @@ function CollisionService:KnitInit()
 	PhysicsService:RegisterCollisionGroup("Ragdoll")
 	PhysicsService:RegisterCollisionGroup("Resource")
 	PhysicsService:RegisterCollisionGroup("Draggable")
-	
+	PhysicsService:RegisterCollisionGroup("NavQuery")
+
 	PhysicsService:CollisionGroupSetCollidable("Player", "Entity", false)
 	PhysicsService:CollisionGroupSetCollidable("Player", "Ragdoll", false)
 	PhysicsService:CollisionGroupSetCollidable("Player", "Resource", false)
 	PhysicsService:CollisionGroupSetCollidable("Player", "Draggable", false)
+
+	-- Raycast-only group: sight and navigation rays pass through NPCs and players
+	PhysicsService:CollisionGroupSetCollidable("NavQuery", "Entity", false)
+	PhysicsService:CollisionGroupSetCollidable("NavQuery", "Player", false)
+	PhysicsService:CollisionGroupSetCollidable("NavQuery", "Ragdoll", false)
 end
 
 function CollisionService:KnitStart()
@@ -92,7 +100,7 @@ function CollisionService:KnitStart()
 	CollectionService:GetInstanceAddedSignal("Resource"):Connect(onResourceAdded)
 
 	for _, draggable in CollectionService:GetTagged("Draggable") do
-		onResourceAdded(draggable)
+		onDraggableAdded(draggable)
 	end
 	CollectionService:GetInstanceAddedSignal("Draggable"):Connect(onDraggableAdded)
 end

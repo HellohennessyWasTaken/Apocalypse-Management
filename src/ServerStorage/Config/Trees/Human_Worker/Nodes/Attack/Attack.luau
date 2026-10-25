@@ -3,21 +3,17 @@ const ServerStorage = game:GetService("ServerStorage")
 const ItemService = require(ServerStorage.Services.ItemService)
 const SoundService = require(ServerStorage.Services.SoundService)
 
-local node = {}
+const node = {}
 
-local SUCCESS,FAIL,RUNNING = 1,2,3
-
-function node.start(self) end
-
-function node.finish(self, status) end	
+const SUCCESS, FAIL = 1, 2
 
 function node.run(self)
-	if not self.Threat or not self.Threat.PrimaryPart then return FAIL end
+	const threat = self.Threat
+	if not threat or threat.Health:IsDead() then return FAIL end
 
-	local humanoid = self.Threat:FindFirstChild("Humanoid")
-	if not humanoid or humanoid.Health <= 0 then return FAIL end
-	
-	if (self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Magnitude > self.GetAttackRange() then
+	const position = self.Mover:GetPosition()
+	const threatPosition = threat.Mover:GetPosition()
+	if (position - threatPosition).Magnitude > self.GetAttackRange() then
 		return FAIL
 	end
 	if os.clock() - self.LastTimeAttack < self.GetAttackCooldown() then
@@ -31,8 +27,8 @@ function node.run(self)
 		SoundService:PlaySound(toolSound, self.HumanoidRootPart)
 	end
 
-	humanoid:TakeDamage(self.GetDamage())
-	self.Threat.PrimaryPart:ApplyImpulse((self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Unit *  -self.GetKnockback())
+	threat.Health:TakeDamage(self.GetDamage())
+	threat.Mover:Knockback((threatPosition - position).Unit * self.GetKnockback())
 
 	return SUCCESS
 end

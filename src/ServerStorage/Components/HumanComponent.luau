@@ -10,7 +10,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ChatService = game:GetService("Chat")
-local PathfindingService = game:GetService("PathfindingService")
 
 --< FOLDERS >--
 local ServerModules = ServerStorage.Modules
@@ -22,6 +21,9 @@ local TreesFolder = ServerConfig.Trees
 local Component = require(ReplicatedStorage.Packages.Component)
 
 local BehaviorTreeCreator = require(ServerModules.BehaviorTreeCreator)
+const Health = require(ServerModules.Health)
+const Mover = require(ServerModules.Mover)
+const NPCService = require(ServerStorage.Services.NPCService)
 
 local Names = require(Config.Names)
 local MoodsList = require(Config.Moods)
@@ -84,7 +86,7 @@ function HumanComponent:Construct()
 	self.ViewRange = 50
 	self.FieldOfView = 210
 	
-	self.Threat = nil :: Model?
+	self.Threat = nil
 	self.LastTimeSawThreat = math.huge
 	self.MemoryTime = 10
 
@@ -162,13 +164,12 @@ function HumanComponent:Construct()
 		["Resource"] = nil
 	}
 	
-	self.RaycastParams = RaycastParams.new()
-	self.CreatedPath = PathfindingService:CreatePath(self.AgentParameters)
-		
-	self.Humanoid.WalkSpeed = self.BaseSpeed
+	self.Health = Health.new(self.Humanoid)
+	self.Mover = Mover.new(self.Humanoid, self.HumanoidRootPart, self.AgentParameters)
+	self.Mover:SetSpeed(self.BaseSpeed)
 	self.Humanoid.JumpPower = 20
 	
-	self.Humanoid.Died:Connect(function()
+	self.Health.Died:Connect(function()
 		local ItemService = require(game:GetService("ServerStorage").Services.ItemService)
 		for _, v in self.Inventory do
 			if not v then continue end
@@ -178,14 +179,17 @@ function HumanComponent:Construct()
 end
 
 function HumanComponent:Start()
+	NPCService:Register(self, "Human", Tree, 0.2, 3)
+
 	task.wait(3)
+	if self.IsStopped then return end
 
 	local min, max = 10, 25
 	coroutine.resume(coroutine.create(function()
 		task.wait(math.random(min,max))
 		while task.wait() do			
 			if self.Mood then
-				if self.Humanoid.Health <= 0 then break end
+				if self.IsStopped or self.Health:IsDead() then break end
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.Mood)
 				end
@@ -193,7 +197,7 @@ function HumanComponent:Start()
 			end
 			
 			if (#self.Emotion >= 1) then
-				if self.Humanoid.Health <= 0 then break end
+				if self.IsStopped or self.Health:IsDead() then break end
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.Emotion[math.random(1, #self.Emotion)])
 				end
@@ -201,7 +205,7 @@ function HumanComponent:Start()
 			end
 			
 			if (#self.State >= 1) then
-				if self.Humanoid.Health <= 0 then break end
+				if self.IsStopped or self.Health:IsDead() then break end
 				if self.Character:FindFirstChild("HumanoidRootPart") then
 					ChatService:Chat(self.HumanoidRootPart, self.State[math.random(1, #self.State)])
 				end
@@ -212,7 +216,7 @@ function HumanComponent:Start()
 	
 	coroutine.resume(coroutine.create(function()
 		while task.wait(4) do
-			if self.Humanoid.Health <= 0 then break end
+			if self.IsStopped or self.Health:IsDead() then break end
 			
 			if self.Hunger <= 50 then
 				table.insert(self.State, StatesList.List.Hungry)
@@ -232,26 +236,13 @@ function HumanComponent:Start()
 			self.Energy = math.clamp(self.Energy-1, 0, self.MaxEnergy)
 		end
 	end))
-	
-	local _result
-	while task.wait(0.2) do
-		_result = Tree:Run(self)
-	end
-end
-
-function HumanComponent:HeartbeatUpdate(dt)
-	
-end
-
-function HumanComponent:SteppedUpdate(dt)
-	
-end
-
-function HumanComponent:RenderSteppedUpdate(dt)
-	
 end
 
 function HumanComponent:Stop()
+	self.IsStopped = true
+	NPCService:Unregister(self)
+	self.Mover:Destroy()
+	self.Health:Destroy()
 end
 
 return HumanComponent

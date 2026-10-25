@@ -3,9 +3,11 @@
 const CollectionService = game:GetService("CollectionService")
 const ReplicatedStorage = game:GetService("ReplicatedStorage")
 const RunService = game:GetService("RunService")
+const ServerStorage = game:GetService("ServerStorage")
 const Stats = game:GetService("Stats")
 const Workspace = game:GetService("Workspace")
 
+const NPCService = require(ServerStorage.Services.NPCService)
 const StressTestPackets = require(ReplicatedStorage.Modules.StressTestPackets)
 
 const Rig = ReplicatedStorage.Assets.Zombies.Zombie :: Model
@@ -75,12 +77,14 @@ local function report(frameTimes: {number})
 	end
 
 	print(string.format(
-		"[StressTest] zombies %d, humans %d | server %.0f fps (worst frame %.1f ms) | heartbeat %.2f ms | physics %.0f fps | send %.1f KB/s",
+		"[StressTest] zombies %d, humans %d, scheduled %d | server %.0f fps (worst frame %.1f ms) | heartbeat %.2f ms | NPC scheduler %.2f ms | physics %.0f fps | send %.1f KB/s",
 		countTagged("Zombie"),
 		countTagged("Human"),
+		NPCService:GetCount(),
 		#frameTimes / total,
 		worst * 1000,
 		Stats.HeartbeatTime * 1000,
+		NPCService:ConsumeAverageStepTime() * 1000,
 		Workspace:GetRealPhysicsFPS(),
 		Stats.DataSendKbps
 	))

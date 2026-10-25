@@ -42,7 +42,7 @@ function ItemService:PickUp(actor: any, item: Model) : boolean
 	end
 	table.insert(ItemService.debounce, item)
 	
-	local distance = (actor.HumanoidRootPart.Position - item.PrimaryPart.Position).Magnitude
+	local distance = (actor.Mover:GetPosition() - item.PrimaryPart.Position).Magnitude
 	if distance <= actor.GetAttackRange() then
 		const itemData = ItemService:GetItemData(item.Name)
 		const heldItem = actor.Inventory[itemData.Type]
@@ -77,7 +77,7 @@ function ItemService:Drop(actor: any, itemName: string)
 	model:AddTag("Item")
 	model:AddTag("Draggable")
 	
-	model:PivotTo(actor.HumanoidRootPart.CFrame * CFrame.new(0,0,-2))
+	model:PivotTo(actor.Mover:GetCFrame() * CFrame.new(0,0,-2))
 	model.Parent = workspace
 end
 

@@ -9,8 +9,6 @@
 --< SERVICES >--
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
-local ChatService = game:GetService("Chat")
-local PathfindingService = game:GetService("PathfindingService")
 
 --< FOLDERS >--
 local ServerModules = ServerStorage.Modules
@@ -20,9 +18,11 @@ local TreesFolder = ServerConfig.Trees
 
 --< DEPENDENCIES >--
 local Component = require(ReplicatedStorage.Packages.Component)
-local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local BehaviorTreeCreator = require(ServerModules.BehaviorTreeCreator)
+const Health = require(ServerModules.Health)
+const Mover = require(ServerModules.Mover)
+const NPCService = require(ServerStorage.Services.NPCService)
 
 local AgentParameters = {
 	AgentRadius = 1,
@@ -63,7 +63,7 @@ function ZombieComponent:Construct()
 	self.AlertFieldOfView = 360
 	self.IsAlert = false
 	
-	self.Target = nil :: Model?
+	self.Target = nil
 	self.LastTimeSawTarget = os.clock()
 	self.MemoryTime = 7
 	
@@ -133,35 +133,21 @@ function ZombieComponent:Construct()
 		["Resource"] = nil
 	}
 	
-	self.RaycastParams = RaycastParams.new()
-	self.CreatedPath = PathfindingService:CreatePath(self.AgentParameters)
-	
-	self.Humanoid.WalkSpeed = self.BaseSpeed
+	self.Health = Health.new(self.Humanoid)
+	self.Mover = Mover.new(self.Humanoid, self.HumanoidRootPart, self.AgentParameters)
+	self.Mover:SetSpeed(self.BaseSpeed)
 	self.Humanoid.JumpPower = 18
 end
 
 function ZombieComponent:Start()
-	task.wait(3)
-	
-	while task.wait() do
-		local result = Tree:Run(self)
-	end
-end
-
-function ZombieComponent:HeartbeatUpdate(dt)
-	
-end
-
-function ZombieComponent:SteppedUpdate(dt)
-	
-end
-
-function ZombieComponent:RenderSteppedUpdate(dt)
-	
+	NPCService:Register(self, "Zombie", Tree, 0.2, 3)
 end
 
 function ZombieComponent:Stop()
-	
+	self.IsStopped = true
+	NPCService:Unregister(self)
+	self.Mover:Destroy()
+	self.Health:Destroy()
 end
 
 return ZombieComponent

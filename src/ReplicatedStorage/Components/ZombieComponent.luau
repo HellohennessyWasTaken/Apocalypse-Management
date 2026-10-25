@@ -91,18 +91,6 @@ function HumanComponent:Start()
 	end)
 end
 
-function HumanComponent:HeartbeatUpdate(dt)
-	
-end
-
-function HumanComponent:SteppedUpdate(dt)
-	
-end
-
-function HumanComponent:RenderSteppedUpdate(dt)
-	
-end
-
 function HumanComponent:Stop()
 	if self.HealthConnection then
 		self.HealthConnection:Disconnect()
