@@ -13,6 +13,9 @@ local Packages = ReplicatedStorage.Packages
 
 --< DEPENDENCIES >--
 local Knit = require(ReplicatedStorage.Packages.Knit)
+const Loader = require(ReplicatedStorage.Packages.Loader)
+
+const Items = Loader.LoadDescendants(ReplicatedStorage.Config.Items)
 
 --< MAIN >--
 local ItemService = {
@@ -30,6 +33,13 @@ function ItemService:GetItemData(itemName: string): any
 		error(`Item {itemName} does not exist in the configuration.`)
 	end
 	return itemData
+end
+
+function ItemService:IsUpgrade(actor: any, itemName: string): boolean
+	const itemData = Items[itemName]
+	if not (itemData and itemData.Meta.Power) then return false end
+	const heldItem = actor.Inventory[itemData.Type]
+	return not (heldItem and heldItem.Power and heldItem.Power >= itemData.Meta.Power)
 end
 
 function ItemService:PickUp(actor: any, item: Model) : boolean
@@ -65,6 +75,13 @@ function ItemService:PickUp(actor: any, item: Model) : boolean
 	local index = table.find(ItemService.debounce, item)
 	table.remove(ItemService.debounce, index)
 	return false
+end
+
+function ItemService:Eat(actor: any, item: Model)
+	const meta = ItemService:GetItemData(item.Name).Meta
+	actor.Hunger = math.min(actor.Hunger + (meta.Hunger or 0), actor.MaxHunger)
+	actor.Energy = math.min(actor.Energy + (meta.Energy or 0), actor.MaxEnergy)
+	item:Destroy()
 end
 
 function ItemService:Drop(actor: any, itemName: string)

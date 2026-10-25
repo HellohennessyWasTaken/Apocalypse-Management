@@ -1,10 +1,6 @@
-const ReplicatedStorage = game:GetService("ReplicatedStorage")
 const ServerStorage = game:GetService("ServerStorage")
 
-const Loader = require(ReplicatedStorage.Packages.Loader)
 const ItemService = require(ServerStorage.Services.ItemService)
-
-const Items = Loader.LoadDescendants(ReplicatedStorage.Config.Items)
 
 const node = {}
 
@@ -16,11 +12,7 @@ function node.run(self)
 	local closestItem = nil :: Model?
 
 	for _, item: Model in self.NearbyItems do
-		if not item.PrimaryPart then continue end
-		const itemData = Items[item.Name]
-		if not itemData then continue end
-		const heldItem = self.Inventory[itemData.Type]
-		if heldItem and heldItem.Power and heldItem.Power >= itemData.Meta.Power then continue end
+		if not (item.PrimaryPart and ItemService:IsUpgrade(self, item.Name)) then continue end
 
 		const newDistance = (item.PrimaryPart.Position - position).Magnitude
 		if newDistance < distance then
@@ -29,7 +21,7 @@ function node.run(self)
 		end
 	end
 
-	if not closestItem then return SUCCESS end
+	if not closestItem then return FAIL end
 
 	if ItemService:PickUp(self, closestItem) then
 		self.Mover:Stop()

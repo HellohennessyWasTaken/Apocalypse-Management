@@ -11,15 +11,19 @@ const node = {}
 const SUCCESS, FAIL = 1, 2
 
 function node.run(self)
+	if self.Hunger > self.HungryThreshold then return FAIL end
+
 	const position = self.Mover:GetPosition()
 	local distance = math.huge
 	local closestFood = nil :: Model?
 
 	for _, resource: Model in self.NearbyResources do
 		if not resource.PrimaryPart then continue end
-		if Resources[resource.Name].Category ~= "Food" then continue end
+		const resourceData = Resources[resource.Name]
+		if not (resourceData and resourceData.Category == "Food") then continue end
 
-		const newDistance = (resource.PrimaryPart.Position - position).Magnitude
+		const offset = resource.PrimaryPart.Position - position
+		const newDistance = Vector3.new(offset.X, 0, offset.Z).Magnitude
 		if newDistance < distance then
 			distance = newDistance
 			closestFood = resource
@@ -28,9 +32,11 @@ function node.run(self)
 
 	if not closestFood then return FAIL end
 
-	if distance <= math.abs(self.BaseAttackRange - 0.5) then
+	-- horizontal reach: the root sits ~2.5 studs above food on the ground
+	if distance <= self.BaseAttackRange then
 		self.Mover:Stop()
-		return if ItemService:PickUp(self, closestFood) then SUCCESS else FAIL
+		ItemService:Eat(self, closestFood)
+		return SUCCESS
 	end
 
 	self.Mover:MoveTo(closestFood.PrimaryPart.Position, closestFood)

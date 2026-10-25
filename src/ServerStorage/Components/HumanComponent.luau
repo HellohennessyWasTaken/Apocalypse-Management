@@ -66,14 +66,21 @@ function HumanComponent:Construct()
 	
 	self.Mood = MoodsList.List.Meh
 	self.Emotion = {} :: {string}
-	self.State = {} :: {string}
+	self.State = {} :: {[string]: true}
 	
 	self.Traits = {}
 	
 	self.MaxHunger = 100
 	self.Hunger = math.random(1, self.MaxHunger)
+	self.HungerDrainRate = 0.25
+	self.HungryThreshold = 50
 	self.MaxEnergy = 100
 	self.Energy = math.random(1, self.MaxEnergy)
+	self.EnergyDrainRate = 0.25
+	self.RestRate = 2
+	self.TiredThreshold = 50
+	self.WantsRest = false
+	self.LastTimeRested = -math.huge
 	
 	self.AgentParameters = AgentParameters
 	self.WalkRandomlyStartTime = os.clock()
@@ -108,7 +115,7 @@ function HumanComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Damage then
-				addedStat = v.Damage
+				addedStat += v.Damage
 			end
 		end
 		
@@ -118,7 +125,7 @@ function HumanComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.AttackRange then
-				addedStat = v.AttackRange
+				addedStat += v.AttackRange
 			end
 		end
 
@@ -128,7 +135,7 @@ function HumanComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.AttackCooldown then
-				addedStat = v.AttackCooldown
+				addedStat += v.AttackCooldown
 			end
 		end
 
@@ -138,7 +145,7 @@ function HumanComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Speed then
-				addedStat = v.Speed
+				addedStat += v.Speed
 			end
 		end
 
@@ -148,7 +155,7 @@ function HumanComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Knockback then
-				addedStat = v.Knockback
+				addedStat += v.Knockback
 			end
 		end
 
@@ -204,38 +211,30 @@ function HumanComponent:Start()
 				task.wait(math.random(min,max))
 			end
 			
-			if (#self.State >= 1) then
+			if next(self.State) then
 				if self.IsStopped or self.Health:IsDead() then break end
 				if self.Character:FindFirstChild("HumanoidRootPart") then
-					ChatService:Chat(self.HumanoidRootPart, self.State[math.random(1, #self.State)])
+					const states = {}
+					for state in self.State do
+						table.insert(states, state)
+					end
+					ChatService:Chat(self.HumanoidRootPart, states[math.random(1, #states)])
 				end
 				task.wait(math.random(min,max))
 			end
 		end
 	end))
-	
-	coroutine.resume(coroutine.create(function()
-		while task.wait(4) do
-			if self.IsStopped or self.Health:IsDead() then break end
-			
-			if self.Hunger <= 50 then
-				table.insert(self.State, StatesList.List.Hungry)
-			else
-				local index = table.find(self.State, StatesList.List.Hungry)
-				table.remove(self.State, index)
-			end
-			
-			if self.Energy <= 50 then
-				table.insert(self.State, StatesList.List.Tired)
-			else
-				local index = table.find(self.State, StatesList.List.Tired)
-				table.remove(self.State, index)
-			end
-			
-			self.Hunger = math.clamp(self.Hunger-1, 0, self.MaxHunger)
-			self.Energy = math.clamp(self.Energy-1, 0, self.MaxEnergy)
-		end
-	end))
+end
+
+function HumanComponent:StepNeeds(now: number, deltaTime: number)
+	-- the Energy node stamps LastTimeRested on every 0.2 s think tick while resting
+	const isResting = now - self.LastTimeRested < 0.5
+	const energyChange = if isResting then self.RestRate else -self.EnergyDrainRate
+	self.Hunger = math.clamp(self.Hunger - self.HungerDrainRate * deltaTime, 0, self.MaxHunger)
+	self.Energy = math.clamp(self.Energy + energyChange * deltaTime, 0, self.MaxEnergy)
+
+	self.State[StatesList.List.Hungry] = if self.Hunger <= self.HungryThreshold then true else nil
+	self.State[StatesList.List.Tired] = if self.Energy <= self.TiredThreshold then true else nil
 end
 
 function HumanComponent:Stop()

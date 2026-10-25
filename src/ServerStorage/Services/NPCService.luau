@@ -12,6 +12,7 @@ const GridCellSize = 25
 const GridRebuildInterval = 0.25
 const PerceptionInterval = 0.5
 const MoveStepInterval = 0.1
+const NeedsInterval = 1
 const FrameBudget = 0.004
 
 export type Kind = "Human" | "Zombie"
@@ -23,6 +24,8 @@ type Schedule = {
 	NextThink: number,
 	NextPerception: number,
 	NextMoveStep: number,
+	NextNeedsStep: number,
+	LastNeedsStep: number,
 }
 
 const NPCService = {
@@ -159,6 +162,12 @@ local function tickNPC(npc: any, now: number)
 		schedule.NextThink = now + schedule.ThinkInterval
 		schedule.Tree:Run(npc)
 	end
+
+	if schedule.Kind == "Human" and now >= schedule.NextNeedsStep then
+		npc:StepNeeds(now, now - schedule.LastNeedsStep)
+		schedule.LastNeedsStep = now
+		schedule.NextNeedsStep = now + NeedsInterval
+	end
 end
 
 local function flushRemovals()
@@ -216,6 +225,8 @@ function NPCService:Register(npc: any, kind: Kind, tree: any, thinkInterval: num
 		NextThink = now + thinkDelay + math.random() * thinkInterval,
 		NextPerception = now + math.random() * PerceptionInterval,
 		NextMoveStep = now + math.random() * MoveStepInterval,
+		NextNeedsStep = now + math.random() * NeedsInterval,
+		LastNeedsStep = now,
 	} :: Schedule
 	table.insert(npcs, npc)
 

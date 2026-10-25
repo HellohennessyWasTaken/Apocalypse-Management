@@ -1,13 +1,19 @@
-local node = {}		
+const node = {}
 
-local SUCCESS,FAIL,RUNNING = 1,2,3
-
-function node.start(self) end
-
-function node.finish(self, status) end	
+const SUCCESS, FAIL = 1, 2
 
 function node.run(self)
-	return FAIL
+	if self.Energy <= self.TiredThreshold then
+		self.WantsRest = true
+	elseif self.Energy >= self.MaxEnergy then
+		self.WantsRest = false
+	end
+	if not self.WantsRest then return FAIL end
+
+	self.Mover:Stop()
+	self.LastTimeRested = os.clock()
+	self.WalkRandomlyStartTime = os.clock()
+	return SUCCESS
 end
 
 return node

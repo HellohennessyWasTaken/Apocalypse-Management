@@ -77,7 +77,7 @@ function ZombieComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Damage then
-				addedStat = v.Damage
+				addedStat += v.Damage
 			end
 		end
 		
@@ -87,7 +87,7 @@ function ZombieComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.AttackRange then
-				addedStat = v.AttackRange
+				addedStat += v.AttackRange
 			end
 		end
 
@@ -97,7 +97,7 @@ function ZombieComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.AttackCooldown then
-				addedStat = v.AttackCooldown
+				addedStat += v.AttackCooldown
 			end
 		end
 
@@ -107,7 +107,7 @@ function ZombieComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Speed then
-				addedStat = v.Speed
+				addedStat += v.Speed
 			end
 		end
 
@@ -117,7 +117,7 @@ function ZombieComponent:Construct()
 		local addedStat = 0
 		for _, v in self.Inventory do
 			if v.Knockback then
-				addedStat = v.Knockback
+				addedStat += v.Knockback
 			end
 		end
 

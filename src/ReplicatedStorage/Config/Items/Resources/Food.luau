@@ -1,6 +1,7 @@
 local Food = {
 	Name = "Food",
 	Type = "Resource",
+	Category = "Food",
 	Model = game.ReplicatedStorage.Assets.Items.Resources.Food,
 	
 	Meta = {
