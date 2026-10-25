@@ -220,6 +220,7 @@ function NPCService:Register(npc: any, kind: Kind, tree: any, thinkInterval: num
 	table.insert(npcs, npc)
 
 	npc.Health.Died:Once(function()
+		npc.Mover:StopFacing()
 		NPCService:Unregister(npc)
 	end)
 end

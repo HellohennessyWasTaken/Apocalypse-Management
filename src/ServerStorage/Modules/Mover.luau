@@ -15,6 +15,10 @@ const StuckTime = 2
 const RetryDelay = 1
 const ForcePathTime = 3
 const MaxConcurrentPaths = 4
+const FaceHoldTime = 0.3
+const FaceTorque = Vector3.new(0, math.huge, 0)
+const FaceP = 10000
+const FaceD = 500
 
 const Mover = {}
 Mover.__index = Mover
@@ -41,6 +45,8 @@ export type Mover = typeof(setmetatable({} :: {
 	ForcePathUntil: number,
 	PathRequestId: number,
 	PathPending: boolean,
+	Gyro: BodyGyro?,
+	FaceUntil: number,
 	Destroyed: boolean,
 }, Mover))
 
@@ -55,9 +61,18 @@ navParams.CollisionGroup = "NavQuery"
 const pathQueue: {[number]: PathRequest} = {}
 local queueHead, queueTail = 1, 0
 local activePaths = 0
+const gyroPool: {BodyGyro} = {}
 
 local function horizontalDistance(a: Vector3, b: Vector3): number
 	return Vector2.new(a.X - b.X, a.Z - b.Z).Magnitude
+end
+
+local function newGyro(): BodyGyro
+	const gyro = Instance.new("BodyGyro")
+	gyro.MaxTorque = FaceTorque
+	gyro.P = FaceP
+	gyro.D = FaceD
+	return gyro
 end
 
 local pumpPaths: () -> ()
@@ -117,6 +132,8 @@ function Mover.new(humanoid: Humanoid, root: BasePart, agentParameters: {[string
 		ForcePathUntil = 0,
 		PathRequestId = 0,
 		PathPending = false,
+		Gyro = nil :: BodyGyro?,
+		FaceUntil = 0,
 		Destroyed = false,
 	}, Mover)
 	return self
@@ -144,6 +161,29 @@ function Mover.Knockback(self: Mover, impulse: Vector3)
 	-- NaN when attacker and target overlap (zero vector .Unit)
 	if impulse.Magnitude ~= impulse.Magnitude then return end
 	self.Root:ApplyImpulse(impulse)
+end
+
+function Mover.Face(self: Mover, position: Vector3)
+	if not self.Gyro then
+		self.Gyro = table.remove(gyroPool) or newGyro()
+	end
+
+	const gyro = self.Gyro :: BodyGyro
+	const rootPosition = self.Root.Position
+	gyro.CFrame = CFrame.lookAt(rootPosition, Vector3.new(position.X, rootPosition.Y, position.Z))
+	gyro.Parent = self.Root
+	self.FaceUntil = os.clock() + FaceHoldTime
+end
+
+function Mover.StopFacing(self: Mover)
+	const gyro = self.Gyro
+	if not gyro then return end
+	self.Gyro = nil
+	-- Not parented to the root means it was destroyed along with the model
+	if gyro.Parent == self.Root then
+		gyro.Parent = nil
+		table.insert(gyroPool, gyro)
+	end
 end
 
 function Mover.MoveTo(self: Mover, destination: Vector3, target: Instance?)
@@ -190,6 +230,9 @@ function Mover.Stop(self: Mover)
 end
 
 function Mover.Step(self: Mover, now: number)
+	if self.Gyro and now >= self.FaceUntil then
+		self:StopFacing()
+	end
 	if self.Status ~= "Moving" then return end
 
 	const position = self.Root.Position
@@ -216,6 +259,7 @@ end
 function Mover.Destroy(self: Mover)
 	self.Destroyed = true
 	self:_cancelPath()
+	self:StopFacing()
 end
 
 function Mover._cancelPath(self: Mover)
