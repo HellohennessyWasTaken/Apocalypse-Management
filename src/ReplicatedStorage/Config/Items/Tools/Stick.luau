@@ -4,7 +4,6 @@ local Stick = {
 	Model = game.ReplicatedStorage.Assets.Items.Tools.Stick,
 	IdleAnimation = "",
 	ActiveAnimation = "http://www.roblox.com/asset/?id=182393478",
-	Sound = "rbxassetid://182393478",
 
 	Meta = {
 		Nickname = "Stick",

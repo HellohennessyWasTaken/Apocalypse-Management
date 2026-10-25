@@ -5,67 +5,59 @@
 --< TYPES >--
 
 --< SERVICES >--
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Debris = game:GetService("Debris")
+const ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --< FOLDERS >--
-local Assets = ReplicatedStorage.Assets
+const Assets = ReplicatedStorage.Assets
 
 --< DEPENDENCIES >--
-local Knit = require(ReplicatedStorage.Packages.Knit)
-local Packet = require(ReplicatedStorage.Modules.Packet)
+const Knit = require(ReplicatedStorage.Packages.Knit)
+const Packet = require(ReplicatedStorage.Modules.Packet)
 
 --< MAIN >--
 --[[@ Packet("SoundPacket",
 	"SoundName", -- string
 	"ParentTo", -- Instance
 )]]
-local 	PlaySoundPacket = Packet("PlaySoundPacket", Packet.String, Packet.Instance)
+const PlaySoundPacket = Packet("PlaySoundPacket", Packet.String, Packet.Instance)
 
-local SoundController = {
+const SoundController = {
 	Name = script.Name,
 }
 
-function SoundController:KnitInit()
-	-- SoundController.PlaySoundPacket.OnClientEvent:Connect(function(soundName, parentTo)
-	-- 	print("Received sound packet:", soundName, parentTo)
+function SoundController:PlaySound(soundName: string, parentTo: Instance?)
+	const sound = Assets.Sounds:FindFirstChild(soundName) :: Sound?
+	if not sound then
+		warn("Sound not found:", soundName)
+		return
+	end
+	if not parentTo then return end
 
-	-- 	local sound = Assets.Sounds:FindFirstChild(soundName) :: Sound
-	-- 	if not sound then
-	-- 		warn("Sound not found:", soundName)
-	-- 		return
-	-- 	end
-
-	-- 	local soundInstance = sound:Clone()
-	-- 	soundInstance.Parent = parentTo
-	-- 	soundInstance:Play()
-	-- 	Debris:AddItem(soundInstance, soundInstance.TimeLength)
-	-- end)
+	const soundInstance = sound:Clone()
+	soundInstance.Parent = parentTo
+	-- TimeLength is 0 until the asset loads, so Debris with TimeLength can destroy it before it plays
+	soundInstance.Ended:Once(function()
+		soundInstance:Destroy()
+	end)
+	soundInstance:Play()
 end
 
+function SoundController:KnitInit() end
+
 function SoundController:KnitStart()
-	local SoundService = Knit.GetService("SoundService")
-	local PlaySoundSignal = SoundService.PlaySoundSignal
+	const SoundService = Knit.GetService("SoundService")
+	const PlaySoundSignal = SoundService.PlaySoundSignal
 
 	PlaySoundSignal:Connect(function(...)
 		PlaySoundPacket.OnClientEvent:Fire(PlaySoundPacket:Deserialize(...))
 	end)
-	
+
 	PlaySoundPacket.Fire = function(packet, ...)
 		PlaySoundSignal:FireServer(packet:Serialize(...))
 	end
 
 	PlaySoundPacket.OnClientEvent:Connect(function(soundName, parentTo)
-		local sound = Assets.Sounds:FindFirstChild(soundName) :: Sound
-		if not sound then
-			warn("Sound not found:", soundName)
-			return
-		end
-
-		local soundInstance = sound:Clone()
-		soundInstance.Parent = parentTo
-		soundInstance:Play()
-		Debris:AddItem(soundInstance, soundInstance.TimeLength)
+		SoundController:PlaySound(soundName, parentTo)
 	end)
 end
 

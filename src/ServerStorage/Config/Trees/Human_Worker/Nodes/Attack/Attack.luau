@@ -1,4 +1,9 @@
-local node = {}		
+const ServerStorage = game:GetService("ServerStorage")
+
+const ItemService = require(ServerStorage.Services.ItemService)
+const SoundService = require(ServerStorage.Services.SoundService)
+
+local node = {}
 
 local SUCCESS,FAIL,RUNNING = 1,2,3
 
@@ -19,6 +24,12 @@ function node.run(self)
 		return FAIL
 	end
 	self.LastTimeAttack = os.clock()
+
+	const tool = self.Inventory.Tool
+	const toolSound = if tool then ItemService:GetItemData(tool.Name).Sound else nil
+	if toolSound then
+		SoundService:PlaySound(toolSound, self.HumanoidRootPart)
+	end
 
 	humanoid:TakeDamage(self.GetDamage())
 	self.Threat.PrimaryPart:ApplyImpulse((self.HumanoidRootPart.Position - self.Threat.PrimaryPart.Position).Unit *  -self.GetKnockback())

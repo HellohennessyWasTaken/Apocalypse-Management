@@ -5,24 +5,20 @@
 --< TYPES >--
 
 --< SERVICES >--
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Debris = game:GetService("Debris")
-
---< FOLDERS >--
-local Assets = ReplicatedStorage.Assets
+const ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --< DEPENDENCIES >--
-local Knit = require(ReplicatedStorage.Packages.Knit)
-local Packet = require(ReplicatedStorage.Modules.Packet)
+const Knit = require(ReplicatedStorage.Packages.Knit)
+const Packet = require(ReplicatedStorage.Modules.Packet)
 
 --< MAIN >--
 --[[@ Packet("SoundPacket",
 	"SoundName", -- string
 	"ParentTo", -- Instance
 )]]
-local PlaySoundPacket = Packet("PlaySoundPacket", Packet.String, Packet.Instance)
+const PlaySoundPacket = Packet("PlaySoundPacket", Packet.String, Packet.Instance)
 
-local SoundService = {
+const SoundService = {
 	Name = script.Name,
 	Client = {
 		PlaySoundSignal = Knit.CreateUnreliableSignal(),
@@ -30,24 +26,11 @@ local SoundService = {
 }
 
 function SoundService:PlaySound(soundName: string, parentTo: Instance)
-	local sound = Assets.Sounds:FindFirstChild(soundName) :: Sound
-	if not sound then
-		warn("Sound not found:", soundName)
-		return
-	end
-
-	local soundInstance = sound:Clone()
-	soundInstance.Parent = parentTo
-	soundInstance:Play()
-	Debris:AddItem(soundInstance, soundInstance.TimeLength)
+	PlaySoundPacket:Fire(soundName, parentTo)
 end
 
 function SoundService:PlaySoundClient(player: Player, soundName: string, parentTo: Instance)
 	PlaySoundPacket:FireClient(player, soundName, parentTo)
-end
-
-function SoundService:PlaySoundClientAll(soundName: string, parentTo: Instance)
-	PlaySoundPacket:Fire(soundName, parentTo)
 end
 
 function SoundService:KnitInit()
